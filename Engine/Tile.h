@@ -31,6 +31,7 @@ public:
     ObjT Tile::getObj() const;
     void setObj(ObjT type);
     DrawSt Tile::getDrawSt() const;
+    bool isRevealed() const;
 
 private:
     ObjT obj = ObjT::Void;

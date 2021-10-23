@@ -59,3 +59,8 @@ DrawSt Tile::getDrawSt() const
 {
     return drawState;
 }
+
+bool Tile::isRevealed() const
+{
+    return revealed;
+}
