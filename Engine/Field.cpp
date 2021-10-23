@@ -34,28 +34,42 @@ void Field::draw() const
 
             switch (tile.getDrawSt())
             {
-                case DrawSt::CorrectFlag:  SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
+                case DrawSt::HiddenMeme:   SpriteCodex::DrawTileBomb(tilePos, gfx);  break;
+                case DrawSt::CorrectFlag:  SpriteCodex::DrawTileBomb(tilePos, gfx);
+                                           SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
+                case DrawSt::Flag:         SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
                 case DrawSt::WrongFlag:    SpriteCodex::DrawTileCross(tilePos, gfx); break;
                 case DrawSt::FatalMeme:    SpriteCodex::DrawTileBombRed(tilePos, gfx); break;
-                case DrawSt::Flag:         SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
-                case DrawSt::HiddenMeme:   SpriteCodex::DrawTileBomb(tilePos, gfx);  break;
             }
         }
     }
 }
 
-void Field::parseMouse(const Mouse::Event& event) const
+bool Field::parseMouse(const Mouse::Event& event)
 {
     Vei2 tileInd = event.GetPosVei() /SpriteCodex::tileSize;
     if(tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
-        return;
+        return false;
 
-    tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
+    bool fatalClick = tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
+    if(fatalClick) 
+    {
+        revealEverything();
+        return true;
+    }
+
+    return false;
 }
 
 int Field::getTilesCount() const
 {
-    return tilesInW * tilesInW;
+    return tilesInW * tilesInH;
+}
+
+void Field::revealEverything()
+{
+    for (int i = 0; i < getTilesCount(); ++i)
+        tiles[i].revealForLoser();
 }
 
 void Field::reset()
