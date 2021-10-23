@@ -4,12 +4,11 @@
 Field::Field(Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness)
     :gfx(Gfx),
     tilesInW(TilesInW),
-    tilesInH(TilesInH),
-    memesFillness(MemesFillness)
+    tilesInH(TilesInH)
 {
     tiles = new Tile[tilesInW * TilesInH];
 
-    reset();
+    reset(MemesFillness);
 }
 
 Field::~Field()
@@ -58,9 +57,9 @@ int Field::getTilesCount() const
     return tilesInW * tilesInW;
 }
 
-void Field::reset()
+void Field::reset(float MemesFillness)
 {
-    int memesCount = int(getTilesCount() *memesFillness);
+    int memesCount = int(getTilesCount() *MemesFillness);
 
     for(int i=0; i < getTilesCount(); ++i)
         tiles[i].reset();

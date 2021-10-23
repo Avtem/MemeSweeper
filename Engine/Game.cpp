@@ -39,13 +39,6 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	while (!wnd.kbd.KeyIsEmpty())
-	{
-		const Keyboard::Event e = wnd.kbd.ReadKey();
-		if (e.IsRelease() && e.GetCode() == 'R')
-			field.reset();
-	}
-
 	while(!wnd.mouse.IsEmpty())
 	{
 		Mouse::Event ev =  wnd.mouse.Read();

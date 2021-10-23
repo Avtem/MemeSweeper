@@ -16,7 +16,6 @@ public:
     ~Field();
     void draw() const;
     void parseMouse(const Mouse::Event& event) const;
-    void reset();
     
 private:
     Graphics& gfx;
@@ -24,9 +23,9 @@ private:
     int tilesInH;
     GameSt gameState = GameSt::Running;
     Tile *tiles = nullptr;
-    float memesFillness;
 
     // m.f.
     int getTilesCount() const;
+    void reset(float MemesFillness);
 };
 
