@@ -16,16 +16,17 @@ public:
     ~Field();
     void draw() const;
     void parseMouse(const Mouse::Event& event) const;
+    void reset();
     
 private:
     Graphics& gfx;
     int tilesInW;
     int tilesInH;
+    float memesFillness;
     GameSt gameState = GameSt::Running;
     Tile *tiles = nullptr;
 
     // m.f.
     int getTilesCount() const;
-    void reset(float MemesFillness);
 };
 
