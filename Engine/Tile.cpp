@@ -33,8 +33,14 @@ bool Tile::parseMouse(Mouse::Event::Type mouseEv)
 
 void Tile::revealForLoser()
 {
-    if(false == revealed && drawState == DrawSt::Flag)
-        drawState = obj == ObjT::Meme ? DrawSt::CorrectFlag : DrawSt::WrongFlag;
+    if(revealed)
+        return;
+    
+    if(drawState == DrawSt::Flag)
+        drawState = obj == ObjT::Meme ? DrawSt::CorrectFlag
+                                      : DrawSt::WrongFlag;
+    else if(obj == ObjT::Meme)
+        drawState = DrawSt::HiddenMeme;
 }
 
 void Tile::reset()
