@@ -21,5 +21,7 @@ private:
     // m.f.
     int getTilesCount() const;
     void revealEverything();
+    void putMemes();
+    void putNumbers();
 };
 

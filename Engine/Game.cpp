@@ -25,7 +25,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 19, 29, 0.3f)
+	field(gfx, 9, 9, 0.15f)
 {
 }
 
