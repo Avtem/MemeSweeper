@@ -24,7 +24,8 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	field(gfx, 9, 9)
 {
 }
 
@@ -38,8 +39,18 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	while(!wnd.mouse.IsEmpty())
+	{
+		Mouse::Event ev =  wnd.mouse.Read();
+		if(ev.GetType() == Mouse::Event::Type::LRelease
+		|| ev.GetType() == Mouse::Event::Type::RRelease)
+		{
+			field.parseMouse(ev);
+		}
+	}
 }
 
 void Game::ComposeFrame()
 {
+	field.draw();
 }

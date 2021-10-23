@@ -15,7 +15,7 @@ public:
     Field (Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness = 0.1);
     ~Field();
     void draw() const;
-    void parseMouse(const Mouse& mouse) const;
+    void parseMouse(const Mouse::Event& event) const;
     
 private:
     Graphics& gfx;
@@ -25,6 +25,7 @@ private:
     Tile *tiles = nullptr;
 
     // m.f.
-    void generateMemes(float MemesFillness);
+    int getTilesCount() const;
+    void reset(float MemesFillness);
 };
 
