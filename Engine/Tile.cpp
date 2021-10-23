@@ -61,6 +61,12 @@ void Tile::setObj(ObjT type)
     obj = type;
 }
 
+void Tile::setNumber(int memeCount)
+{
+    obj = ObjT::Number;
+    numOfAdjMemes = memeCount;
+}
+
 DrawSt Tile::getDrawSt() const
 {
     return drawState;

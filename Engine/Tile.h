@@ -30,6 +30,7 @@ public:
     void reset();
     ObjT Tile::getObj() const;
     void setObj(ObjT type);
+    void setNumber(int memeCount);
     DrawSt Tile::getDrawSt() const;
     bool isRevealed() const;
 
