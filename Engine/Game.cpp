@@ -25,7 +25,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 9, 9)
+	field(gfx, 19, 29, 0.3f)
 {
 }
 
@@ -43,16 +43,20 @@ void Game::UpdateModel()
 	{
 		const Keyboard::Event e = wnd.kbd.ReadKey();
 		if (e.IsRelease() && e.GetCode() == 'R')
+		{
+			gameState = GameSt::Running;
 			field.reset();
+		}
 	}
-
-	while(!wnd.mouse.IsEmpty())
+	
+	while(gameState != GameSt::GameOver &&  !wnd.mouse.IsEmpty())
 	{
 		Mouse::Event ev =  wnd.mouse.Read();
 		if(ev.GetType() == Mouse::Event::Type::LRelease
 		|| ev.GetType() == Mouse::Event::Type::RRelease)
 		{
-			field.parseMouse(ev);
+			if(field.parseMouse(ev)) // returns true if click was fatal
+				gameState = GameSt::GameOver;
 		}
 	}
 }

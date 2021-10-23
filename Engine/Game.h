@@ -25,6 +25,14 @@
 #include "Graphics.h"
 #include "Field.h"
 
+enum class GameSt
+{
+	Running,
+	GameOver,
+	Win
+};
+
+
 class Game
 {
 public:
@@ -43,6 +51,7 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	GameSt gameState = GameSt::Running;
 	Field field;
 	/********************************/
 };
