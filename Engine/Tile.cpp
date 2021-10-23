@@ -8,7 +8,7 @@ bool Tile::parseMouse(Mouse::Event::Type mouseEv)
     if(revealed)
         return false;
 
-    if(mouseEv == lmbUp)
+    if(mouseEv == lmbUp && drawState != DrawSt::Flag)
     {
         switch (obj)
         {
