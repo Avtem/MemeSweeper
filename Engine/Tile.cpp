@@ -44,3 +44,18 @@ void Tile::reset()
     obj = ObjT::Void;
     drawState = DrawSt::Normal;
 }
+
+ObjT Tile::getObj() const
+{
+    return obj;
+}
+
+void Tile::setObj(ObjT type)
+{
+    obj = type;
+}
+
+DrawSt Tile::getDrawSt() const
+{
+    return drawState;
+}

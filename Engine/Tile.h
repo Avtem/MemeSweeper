@@ -28,6 +28,9 @@ public:
     bool parseMouse(Mouse::Event::Type mouseEv); // returns TRUE if you hit a meme
     void revealForLoser();
     void reset();
+    ObjT Tile::getObj() const;
+    void setObj(ObjT type);
+    DrawSt Tile::getDrawSt() const;
 
 private:
     ObjT obj = ObjT::Void;
