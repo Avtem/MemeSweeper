@@ -27,6 +27,7 @@ public:
 //////////// member functions
     bool parseMouse(Mouse::Event::Type mouseEv); // returns TRUE if you hit a meme
     void revealForLoser();
+    void reset();
 
 private:
     ObjT obj = ObjT::Void;

@@ -36,3 +36,11 @@ void Tile::revealForLoser()
     if(false == revealed && drawState == DrawSt::Flag)
         drawState = obj == ObjT::Meme ? DrawSt::CorrectFlag : DrawSt::WrongFlag;
 }
+
+void Tile::reset()
+{
+    numOfAdjMemes = -1;
+    revealed = false;
+    obj = ObjT::Void;
+    drawState = DrawSt::Normal;
+}
