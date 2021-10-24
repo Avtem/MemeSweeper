@@ -28,6 +28,5 @@ private:
     void revealEverything();
     void putMemes();
     void putNumbers();
-    void drawBorder() const;
 };
 
