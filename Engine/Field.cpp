@@ -20,6 +20,7 @@ Field::~Field()
 void Field::draw() const
 {
     gfx.DrawRect(0, 0, gfx.ScreenWidth -1, gfx.ScreenHeight -1, SpriteCodex::baseColor);
+    drawBorder();
 
     for(int y=0; y < tilesInH; ++y)
     {
@@ -136,6 +137,18 @@ void Field::putNumbers()
             tiles[x +y*tilesInW].setNumber(count);
         }
     }
+}
+
+void Field::drawBorder() const
+{
+    Vei2 leftTop = { drawOff.x -borderThickness, drawOff.y -borderThickness };
+    Vei2 dims = getSizeInPx();
+    gfx.DrawRect(leftTop.x, leftTop.y,
+                 leftTop.x +dims.x +borderThickness *2,
+                 leftTop.y + dims.y +borderThickness*2,
+                 Colors::Gray);
+    gfx.DrawRect(drawOff.x, drawOff.y, drawOff.x +dims.x, drawOff.y + dims.y,
+                 SpriteCodex::baseColor);
 }
 
 void Field::reset()

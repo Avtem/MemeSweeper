@@ -20,11 +20,13 @@ private:
     float memesFillness;
     Tile *tiles = nullptr;
     Vei2 drawOff;
+    const int borderThickness = 5;
 
     // m.f.
     int getTilesCount() const;
     void revealEverything();
     void putMemes();
     void putNumbers();
+    void drawBorder() const;
 };
 
