@@ -3,10 +3,10 @@
 #define lmbUp Mouse::Event::Type::LRelease
 #define rmbUp Mouse::Event::Type::RRelease
 
-bool Tile::parseMouse(Mouse::Event::Type mouseEv)
+ClickRes Tile::parseMouse(Mouse::Event::Type mouseEv)
 {
     if(revealed)
-        return false;
+        return ClickRes::Nothing;
 
     if(mouseEv == lmbUp && drawState != DrawSt::Flag)
     {
@@ -15,7 +15,7 @@ bool Tile::parseMouse(Mouse::Event::Type mouseEv)
             case ObjT::Meme:
                 drawState = DrawSt::FatalMeme;
                 revealed = true;
-                return true;
+                return ClickRes::GameOver;
             case ObjT::Void:
             case ObjT::Number:
                 revealed = true;
@@ -28,7 +28,7 @@ bool Tile::parseMouse(Mouse::Event::Type mouseEv)
         drawState = drawState == DrawSt::Normal ? DrawSt::Flag : DrawSt::Normal;
     }
 
-    return false;
+    return ClickRes::Nothing;
 }
 
 void Tile::revealForLoser()

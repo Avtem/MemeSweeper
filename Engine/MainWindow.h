@@ -57,6 +57,7 @@ public:
 	bool IsActive() const;
 	bool IsMinimized() const;
 	void ShowMessageBox( const std::wstring& title,const std::wstring& message ) const;
+	HWND getHwnd() const { return hWnd; }
 	void Kill()
 	{
 		PostQuitMessage( 0 );

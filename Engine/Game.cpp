@@ -20,6 +20,8 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "resource.h"
+#include <windows.h>
 
 Game::Game( MainWindow& wnd )
 	:
@@ -57,8 +59,19 @@ void Game::UpdateModel()
 		|| ev.GetType() == Mouse::Event::Type::RRelease)
 		{
 			Vei2 offset = calcOffsetForField();
-			if(field.parseMouse(ev, offset)) // returns true if click was fatal
+			ClickRes res = field.parseMouse(ev, offset);
+			if(res == ClickRes::GameOver) // returns true if click was fatal
+			{
 				gameState = GameSt::GameOver;
+				wnd.ShowMessageBox(L"You suck, man.", 
+								   L"\nHit 'R' and become better at this game.");
+			}
+			else if(res == ClickRes::GameWin)
+			{
+				gameState = GameSt::Win;
+				wnd.ShowMessageBox(L"You won!", 
+								   L"Nice job, man.\nHit 'R' to restart.");
+			}
 		}
 	}
 }

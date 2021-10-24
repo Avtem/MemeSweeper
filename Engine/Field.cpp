@@ -63,20 +63,30 @@ void Field::draw() const
     }
 }
 
-bool Field::parseMouse(const Mouse::Event& event, Vei2& offset)
+ClickRes Field::parseMouse(const Mouse::Event& event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
     if(tileInd.x < 0 || tileInd.y < 0 ||  tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
-        return false;
+        return ClickRes::Nothing;
 
-    bool fatalClick = tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
-    if(fatalClick) 
+    ClickRes clickRes = tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
+    if(clickRes == ClickRes::GameOver) 
     {
         revealEverything();
-        return true;
+        return ClickRes::GameOver;
     }
+    
+    return checkWinCondition();
+}
 
-    return false;
+ClickRes Field::checkWinCondition() const
+{
+    int hiddenTilesCount = 0;
+    for(int i=0; i < getTilesCount(); ++i)
+        hiddenTilesCount += !tiles[i].isRevealed() ? 1 : 0;
+
+    return (int(getTilesCount() *memesFillness) == hiddenTilesCount) ? ClickRes::GameWin
+                                                                     : ClickRes::Nothing;
 }
 
 int Field::getTilesCount() const
