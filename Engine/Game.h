@@ -45,6 +45,7 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	Vei2 calcOffsetForField() const;
 	/********************************/
 private:
 	MainWindow& wnd;

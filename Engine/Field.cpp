@@ -28,7 +28,7 @@ void Field::draw() const
             const Tile& tile = tiles[x +y*tilesInW];
             Vei2 tilePos{x,y};
             tilePos *= SpriteCodex::tileSize;
-
+            tilePos += drawOff;
             
             if(!tile.isRevealed())
                 SpriteCodex::DrawTileButton(tilePos, gfx);
@@ -41,28 +41,30 @@ void Field::draw() const
                 case DrawSt::WrongFlag:    SpriteCodex::DrawTileCross(tilePos, gfx); break;
                 case DrawSt::FatalMeme:    SpriteCodex::DrawTileBombRed(tilePos, gfx); break;
             }
+
             if(tile.isRevealed() && tile.getObj() == ObjT::Number)
             {
+            #define drawN(n) SpriteCodex::DrawTile ## n(tilePos, gfx)
                 switch (tile.numOfAdjMemes)
                 {
-                    case 0:     SpriteCodex::DrawTile0(tilePos, gfx);   break;
-                    case 1:     SpriteCodex::DrawTile1(tilePos, gfx);   break;
-                    case 2:     SpriteCodex::DrawTile2(tilePos, gfx);   break;
-                    case 3:     SpriteCodex::DrawTile3(tilePos, gfx);   break;
-                    case 4:     SpriteCodex::DrawTile4(tilePos, gfx);   break;
-                    case 5:     SpriteCodex::DrawTile5(tilePos, gfx);   break;
-                    case 6:     SpriteCodex::DrawTile6(tilePos, gfx);   break;
-                    case 7:     SpriteCodex::DrawTile7(tilePos, gfx);   break;
-                    case 8:     SpriteCodex::DrawTile8(tilePos, gfx);   break;
+                    case 0:  drawN(0);   break;
+                    case 1:  drawN(1);   break;
+                    case 2:  drawN(2);   break;
+                    case 3:  drawN(3);   break;
+                    case 4:  drawN(4);   break;
+                    case 5:  drawN(5);   break;
+                    case 6:  drawN(6);   break;
+                    case 7:  drawN(7);   break;
+                    case 8:  drawN(8);   break;
                 }
             }
         }
     }
 }
 
-bool Field::parseMouse(const Mouse::Event& event)
+bool Field::parseMouse(const Mouse::Event& event, Vei2& offset)
 {
-    Vei2 tileInd = event.GetPosVei() /SpriteCodex::tileSize;
+    Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
     if(tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
         return false;
 
@@ -143,4 +145,14 @@ void Field::reset()
 
     putMemes();
     putNumbers();
+}
+
+void Field::setDrawingOffset(Vei2 offset)
+{
+    drawOff = offset;
+}
+
+Vei2 Field::getSizeInPx() const
+{
+    return {tilesInW * SpriteCodex::tileSize, tilesInH *SpriteCodex::tileSize};
 }

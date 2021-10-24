@@ -27,6 +27,7 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	field(gfx, 9, 9, 0.15f)
 {
+	field.setDrawingOffset(calcOffsetForField());
 }
 
 void Game::Go()
@@ -55,10 +56,20 @@ void Game::UpdateModel()
 		if(ev.GetType() == Mouse::Event::Type::LRelease
 		|| ev.GetType() == Mouse::Event::Type::RRelease)
 		{
-			if(field.parseMouse(ev)) // returns true if click was fatal
+			Vei2 offset = calcOffsetForField();
+			if(field.parseMouse(ev, offset)) // returns true if click was fatal
 				gameState = GameSt::GameOver;
 		}
 	}
+}
+
+Vei2 Game::calcOffsetForField() const
+{
+	Vei2 fieldSize = field.getSizeInPx();
+	int scrW = Graphics::ScreenWidth;
+	int scrH = Graphics::ScreenHeight;
+
+	return { (scrW -fieldSize.x) /2, (scrH -fieldSize.y) /2 };
 }
 
 void Game::ComposeFrame()
