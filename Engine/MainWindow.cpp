@@ -178,8 +178,8 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 			{
 				ReleaseCapture();
 				mouse.OnMouseLeave();
-				mouse.OnLeftReleased( pt.x,pt.y );
-				mouse.OnRightReleased( pt.x,pt.y );
+				mouse.OnLeftReleased( pt.x,pt.y );	   // avFix: Chili, you shouldn't 
+				mouse.OnRightReleased( pt.x,pt.y );    // push Released events on Mouse MOVE
 			}
 		}
 		break;
