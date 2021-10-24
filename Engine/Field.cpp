@@ -65,7 +65,7 @@ void Field::draw() const
 bool Field::parseMouse(const Mouse::Event& event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
-    if(tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
+    if(tileInd.x < 0 || tileInd.y < 0 ||  tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
         return false;
 
     bool fatalClick = tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
