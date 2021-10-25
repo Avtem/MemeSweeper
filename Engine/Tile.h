@@ -5,9 +5,8 @@
 
 enum class ObjT // object type (the actual thing that resides in the tile)
 {
-    Void = 0,
-    Number, // the tile contains number of adj.memes
-    Meme
+    Meme,
+    Number // the tile contains number of adj.memes
 };
 enum class DrawSt // drawing state
 {
@@ -39,9 +38,10 @@ public:
     void setNumber(int memeCount);
     DrawSt Tile::getDrawSt() const;
     bool isRevealed() const;
+    void reveal();
 
 private:
-    ObjT obj = ObjT::Void;
+    ObjT obj = ObjT::Number;
     DrawSt drawState = DrawSt::Normal;
     bool revealed = false;
 

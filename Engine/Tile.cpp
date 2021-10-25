@@ -16,7 +16,6 @@ ClickRes Tile::parseMouse(Mouse::Event::Type mouseEv)
                 drawState = DrawSt::FatalMeme;
                 revealed = true;
                 return ClickRes::GameOver;
-            case ObjT::Void:
             case ObjT::Number:
                 revealed = true;
                 break;
@@ -47,7 +46,7 @@ void Tile::reset()
 {
     numOfAdjMemes = -1;
     revealed = false;
-    obj = ObjT::Void;
+    obj = ObjT::Number;
     drawState = DrawSt::Normal;
 }
 
@@ -75,4 +74,9 @@ DrawSt Tile::getDrawSt() const
 bool Tile::isRevealed() const
 {
     return revealed;
+}
+
+void Tile::reveal()
+{
+    revealed = true;
 }
