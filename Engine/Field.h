@@ -26,6 +26,7 @@ private:
     // m.f.
     int getTilesCount() const;
     void revealEverything();
+    void revealAdjTiles(const Vei2& pos); // reveals 8 (if they'ren't boms) adj.tiles for tiles with 0
     void putMemes();
     void putNumbers();
 };

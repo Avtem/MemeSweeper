@@ -79,6 +79,8 @@ ClickRes Field::parseMouse(const Mouse::Event& event, Vei2& offset)
         revealEverything();
         return ClickRes::GameOver;
     }
+    if(tiles[tileInd.x +tileInd.y *tilesInW].numOfAdjMemes == 0)
+        revealAdjTiles(tileInd);
     
     return checkWinCondition();
 }
@@ -102,6 +104,32 @@ void Field::revealEverything()
 {
     for (int i = 0; i < getTilesCount(); ++i)
         tiles[i].revealForLoser();
+}
+
+void Field::revealAdjTiles(const Vei2& pos)
+{
+    // reveal 8 adj. tiles
+    Vei2 nPos{pos.x -1, pos.y -1};
+    for (int i = 0; i < 9; ++i, ++nPos.x)
+    {
+        if (i && i %3 == 0)
+        {
+            ++nPos.y;
+            nPos.x = pos.x-1;
+        }
+
+        if (nPos.x < 0 || nPos.y < 0 || nPos.x >= tilesInW || nPos.y >= tilesInH
+        || nPos == pos )
+            continue;
+
+        Tile& tile = tiles[nPos.x +nPos.y *tilesInW];
+        if (tile.getObj() != ObjT::Meme && false == tile.isRevealed())
+        {
+            tile.reveal();
+            if(tile.numOfAdjMemes == 0)
+                revealAdjTiles(nPos);    // recurse!
+        }
+    }
 }
 
 void Field::putMemes()
