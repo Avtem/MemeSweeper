@@ -79,8 +79,10 @@ ClickRes Field::parseMouse(const Mouse::Event& event, Vei2& offset)
         revealEverything();
         return ClickRes::GameOver;
     }
-    if(tiles[tileInd.x +tileInd.y *tilesInW].numOfAdjMemes == 0)
+    else if(0 == tiles[tileInd.x +tileInd.y *tilesInW].numOfAdjMemes)
+    {
         revealAdjTiles(tileInd);
+    }
     
     return checkWinCondition();
 }
@@ -108,26 +110,28 @@ void Field::revealEverything()
 
 void Field::revealAdjTiles(const Vei2& pos)
 {
-    // reveal 8 adj. tiles
-    Vei2 nPos{pos.x -1, pos.y -1};
-    for (int i = 0; i < 9; ++i, ++nPos.x)
+    // terminate condition for the recursion
+    if(0 != tiles[pos.x +pos.y *tilesInW].numOfAdjMemes)
+        return;
+
+    // reveal all 9 tiles around POS
+    Vei2 ind{pos.x -1, pos.y -1};
+    for (int i = 0; i < 9; ++i, ++ind.x)
     {
         if (i && i %3 == 0)
         {
-            ++nPos.y;
-            nPos.x = pos.x-1;
+            ++ind.y;
+            ind.x = pos.x-1;
         }
 
-        if (nPos.x < 0 || nPos.y < 0 || nPos.x >= tilesInW || nPos.y >= tilesInH
-        || nPos == pos )
+        if (isTileIndexBad(ind))
             continue;
 
-        Tile& tile = tiles[nPos.x +nPos.y *tilesInW];
+        Tile& tile = tiles[ind.x +ind.y *tilesInW];
         if (tile.getObj() != ObjT::Meme && false == tile.isRevealed())
         {
             tile.reveal();
-            if(tile.numOfAdjMemes == 0)
-                revealAdjTiles(nPos);    // recurse!
+            revealAdjTiles(ind);    // recurse!
         }
     }
 }
@@ -147,6 +151,11 @@ void Field::putMemes()
         } while (tiles[x +y*tilesInW].getObj() == ObjT::Meme);
         tiles[x +y*tilesInW].setObj(ObjT::Meme);
     }
+}
+
+bool Field::isTileIndexBad(const Vei2& index) const
+{
+    return index.x < 0 || index.y < 0 || index.x >= tilesInW || index.y >= tilesInH;
 }
 
 void Field::putNumbers()
@@ -170,7 +179,7 @@ void Field::putNumbers()
                     nx = x-1;
                 }
 
-                if(nx < 0 || ny < 0 || nx >= tilesInW || ny >= tilesInH)
+                if(isTileIndexBad({nx,ny}))
                     continue;
 
                 count += tiles[nx +ny*tilesInW].getObj() == ObjT::Meme ? 1 : 0;
