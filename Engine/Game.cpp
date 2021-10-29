@@ -45,11 +45,16 @@ void Game::UpdateModel()
 	while (!wnd.kbd.KeyIsEmpty())
 	{
 		const Keyboard::Event e = wnd.kbd.ReadKey();
-		if (e.IsRelease() && e.GetCode() == 'R')
+		if(e.IsPress()) // ignore pressings
+			continue;
+
+		if (e.GetCode() == 'R')
 		{
 			gameState = GameSt::Running;
 			field.reset();
 		}
+		if(gameState != GameSt::GameOver)
+			ai.parseKB(e);
 	}
 	
 	while(gameState != GameSt::GameOver &&  !wnd.mouse.IsEmpty())

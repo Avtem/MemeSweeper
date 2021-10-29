@@ -24,6 +24,8 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Field.h"
+#include "AI.h"
+
 
 enum class GameSt
 {
@@ -54,5 +56,6 @@ private:
 	/*  User Variables              */
 	GameSt gameState = GameSt::Running;
 	Field field;
+	AI ai;
 	/********************************/
 };
