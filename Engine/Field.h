@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tile.h"
+#include "AI.h"
 #include <random>
 
 class Field
@@ -9,13 +10,16 @@ public:
     Field (Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness = 0.1);
     ~Field();
     void draw() const;
-    ClickRes parseMouse(const Mouse::Event& event, Vei2& offset); // returns true if click was fatal
+    ClickRes parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
+    ClickRes clickTile(Vei2 index, Mouse::Event::Type eventType = Mouse::Event::Type::LRelease);
     ClickRes checkWinCondition() const;
     void reset();
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;
     
 private:
+    friend AI;
+
     Graphics& gfx;
     int tilesInW;
     int tilesInH;

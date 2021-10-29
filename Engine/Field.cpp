@@ -2,7 +2,7 @@
 #include "Mouse.h"
 #include <random>
 
-#define getRand(min, max) intDistr(mt)
+#define getRand intDistr(mt)
 
 std::random_device Field::randDevice;
 std::mt19937 Field::mt(Field::randDevice());
@@ -73,23 +73,29 @@ void Field::draw() const
     }
 }
 
-ClickRes Field::parseMouse(const Mouse::Event& event, Vei2& offset)
+ClickRes Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
-    if(tileInd.x < 0 || tileInd.y < 0 ||  tileInd.x > tilesInW -1 || tileInd.y > tilesInH -1)
+    
+    return clickTile(tileInd, event.GetType());
+}
+
+ClickRes Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
+{
+    if (index.x < 0 || index.y < 0 ||  index.x > tilesInW -1 || index.y > tilesInH -1)
         return ClickRes::Nothing;
 
-    ClickRes clickRes = tiles[tileInd.x +tileInd.y *tilesInW].parseMouse(event.GetType());
-    if(clickRes == ClickRes::GameOver) 
+    ClickRes clickRes = tiles[index.x +index.y *tilesInW].parseMouse(eventType);
+    if (clickRes == ClickRes::GameOver)
     {
         revealEverything();
         return ClickRes::GameOver;
     }
-    else if(0 == tiles[tileInd.x +tileInd.y *tilesInW].numOfAdjMemes)
+    else if (0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
     {
-        revealAdjTiles(tileInd);
+        revealAdjTiles(index);
     }
-    
+
     return checkWinCondition();
 }
 
@@ -152,8 +158,8 @@ void Field::putMemes()
         int y{ 0 };
         do
         {
-            x = getRand() %tilesInW;
-            y = getRand() %tilesInH;
+            x = getRand % tilesInW;
+            y = getRand % tilesInH;
         } while (tiles[x +y*tilesInW].getObj() == ObjT::Meme);
         tiles[x +y*tilesInW].setObj(ObjT::Meme);
     }
