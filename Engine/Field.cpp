@@ -3,6 +3,8 @@
 #include <random>
 
 #define getRand intDistr(mt)
+#define lmbUp Mouse::Event::Type::LRelease
+#define rmbUp Mouse::Event::Type::RRelease
 
 std::random_device Field::randDevice;
 std::mt19937 Field::mt(Field::randDevice());
@@ -91,7 +93,7 @@ ClickRes Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
         revealEverything();
         return ClickRes::GameOver;
     }
-    else if (0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
+    else if (eventType == lmbUp &&  0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
     {
         revealAdjTiles(index);
     }

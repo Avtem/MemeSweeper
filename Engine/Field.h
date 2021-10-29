@@ -11,7 +11,7 @@ public:
     ~Field();
     void draw() const;
     ClickRes parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
-    ClickRes clickTile(Vei2 index, Mouse::Event::Type eventType = Mouse::Event::Type::LRelease);
+    ClickRes clickTile(Vei2 index, Mouse::Event::Type eventType);
     ClickRes checkWinCondition() const;
     void reset();
     void setDrawingOffset(Vei2 offset);
