@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tile.h"
+#include <random>
 
 class Field
 {
@@ -22,6 +23,9 @@ private:
     Tile *tiles = nullptr;
     Vei2 drawOff;
     const int borderThickness = 5;
+    static std::random_device randDevice;
+    static std::mt19937 mt;
+    static std::uniform_int_distribution<int> intDistr;
 
     // m.f.
     int getTilesCount() const;

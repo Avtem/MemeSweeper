@@ -1,5 +1,12 @@
 #include "Field.h"
 #include "Mouse.h"
+#include <random>
+
+#define getRand(min, max) intDistr(mt)
+
+std::random_device Field::randDevice;
+std::mt19937 Field::mt(Field::randDevice());
+std::uniform_int_distribution<int> Field::intDistr(0, 999999);
 
 Field::Field(Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness)
     :gfx(Gfx),
@@ -8,7 +15,6 @@ Field::Field(Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness)
     memesFillness(MemesFillness)
 {
     tiles = new Tile[tilesInW * TilesInH];
-
     reset();
 }
 
@@ -146,8 +152,8 @@ void Field::putMemes()
         int y{ 0 };
         do
         {
-            x = rand() %tilesInW;
-            y = rand() %tilesInH;
+            x = getRand() %tilesInW;
+            y = getRand() %tilesInH;
         } while (tiles[x +y*tilesInW].getObj() == ObjT::Meme);
         tiles[x +y*tilesInW].setObj(ObjT::Meme);
     }
