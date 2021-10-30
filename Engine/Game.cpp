@@ -57,7 +57,7 @@ void Game::UpdateModel()
 			field.reset();
 		}
 		if(gameState != GameSt::GameOver)
-			ai.parseKB(e);
+			ai.parseKB(e, wnd.mouse);
 	}
 	
 	while(gameState != GameSt::GameOver &&  !wnd.mouse.IsEmpty())
