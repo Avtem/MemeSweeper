@@ -15,6 +15,7 @@ public:
 	Vei2  operator/( int rhs ) const;
 	Vei2& operator/=( int rhs );
 	bool  operator==(const Vei2& rhs) const;
+	bool  operator!=(const Vei2& rhs) const;
 
 	float GetLength() const;
 	int GetLengthSq() const;
