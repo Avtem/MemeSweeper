@@ -5,7 +5,11 @@
 class AI
 {
 public:
-    void randClick(class Field& field) const;
+    AI(class Field& inField);
+    void randClick() const;
     void parseKB(const Keyboard::Event& event);
+
+private:
+    class Field& field;
 };
 

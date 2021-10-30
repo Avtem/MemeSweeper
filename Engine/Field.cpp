@@ -2,7 +2,6 @@
 #include "Mouse.h"
 #include <random>
 
-#define getRand intDistr(mt)
 #define lmbUp Mouse::Event::Type::LRelease
 #define rmbUp Mouse::Event::Type::RRelease
 
@@ -160,8 +159,8 @@ void Field::putMemes()
         int y{ 0 };
         do
         {
-            x = getRand % tilesInW;
-            y = getRand % tilesInH;
+            x = getRand() % tilesInW;
+            y = getRand() % tilesInH;
         } while (tiles[x +y*tilesInW].getObj() == ObjT::Meme);
         tiles[x +y*tilesInW].setObj(ObjT::Meme);
     }
@@ -221,4 +220,9 @@ void Field::setDrawingOffset(Vei2 offset)
 Vei2 Field::getSizeInPx() const
 {
     return {tilesInW * SpriteCodex::tileSize, tilesInH *SpriteCodex::tileSize};
+}
+
+int Field::getRand() const
+{
+    return intDistr(mt);
 }

@@ -27,7 +27,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 9, 9, 0.15f)
+	field(gfx, 9, 9, 0.15f),
+	ai(field)	// !depends on field
 {
 	field.setDrawingOffset(calcOffsetForField());
 }

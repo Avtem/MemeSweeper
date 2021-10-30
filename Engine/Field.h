@@ -16,6 +16,7 @@ public:
     void reset();
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;
+    int getRand() const;
     
 private:
     friend AI;

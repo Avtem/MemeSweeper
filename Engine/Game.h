@@ -56,6 +56,6 @@ private:
 	/*  User Variables              */
 	GameSt gameState = GameSt::Running;
 	Field field;
-	AI ai;
+	AI ai;	// !depends on field
 	/********************************/
 };
