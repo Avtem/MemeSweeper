@@ -22,6 +22,7 @@
 #include "Game.h"
 #include "resource.h"
 #include <windows.h>
+#include <av.h>
 
 Game::Game( MainWindow& wnd )
 	:
@@ -30,6 +31,7 @@ Game::Game( MainWindow& wnd )
 	field(gfx, 9, 9, 0.15f),
 	ai(field)	// !depends on field
 {
+	avPrint << "" << av::endl;
 	field.setDrawingOffset(calcOffsetForField());
 }
 
