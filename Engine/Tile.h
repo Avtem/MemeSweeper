@@ -16,6 +16,7 @@ public:
     void setNumber(int memeCount);
     void reveal();
     bool isRevealed() const;
+    void setFlag(bool flagged);
     DrawSt Tile::getDrawSt() const;
     ObjT Tile::getObj() const;
     

@@ -76,6 +76,11 @@ bool Tile::isRevealed() const
     return revealed;
 }
 
+void Tile::setFlag(bool flagged)
+{
+    drawState = flagged ? DrawSt::Flag : DrawSt::Normal;
+}
+
 void Tile::reveal()
 {
     revealed = true;
