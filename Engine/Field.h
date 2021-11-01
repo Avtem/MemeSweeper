@@ -10,9 +10,9 @@ public:
     Field (Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness = 0.1);
     ~Field();
     void draw() const;
-    ClickRes parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
-    ClickRes clickTile(Vei2 index, Mouse::Event::Type eventType);
-    ClickRes checkWinCondition() const;
+    void parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
+    void clickTile(Vei2 index, Mouse::Event::Type eventType);
+    void checkWinCondition() const;
     void reset();
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;

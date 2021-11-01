@@ -74,40 +74,40 @@ void Field::draw() const
     }
 }
 
-ClickRes Field::parseMouse(Mouse::Event event, Vei2& offset)
+void Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
     
-    return clickTile(tileInd, event.GetType());
+    clickTile(tileInd, event.GetType());
 }
 
-ClickRes Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
+void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
 {
     if (index.x < 0 || index.y < 0 ||  index.x > tilesInW -1 || index.y > tilesInH -1)
-        return ClickRes::Nothing;
+        return;
 
-    ClickRes clickRes = tiles[index.x +index.y *tilesInW].parseMouse(eventType);
-    if (clickRes == ClickRes::GameOver)
+    tiles[index.x +index.y *tilesInW].parseMouse(eventType);
+    if (*Tile::gameState == GameSt::GameOver)
     {
         revealEverything();
-        return ClickRes::GameOver;
+        return;
     }
     else if (eventType == lmbUp &&  0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
     {
         revealAdjTiles(index);
     }
 
-    return checkWinCondition();
+    checkWinCondition();
 }
 
-ClickRes Field::checkWinCondition() const
+void Field::checkWinCondition() const
 {
     int hiddenTilesCount = 0;
     for(int i=0; i < getTilesCount(); ++i)
         hiddenTilesCount += !tiles[i].isRevealed() ? 1 : 0;
 
-    return (int(getTilesCount() *memesFillness) == hiddenTilesCount) ? ClickRes::GameWin
-                                                                     : ClickRes::Nothing;
+    if (int(getTilesCount() *memesFillness) == hiddenTilesCount)
+        *Tile::gameState = GameSt::Win;
 }
 
 int Field::getTilesCount() const

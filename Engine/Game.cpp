@@ -28,11 +28,12 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 9, 9, 0.15f),
+	field(gfx, 5, 5, 0.15f),
 	ai(field)	// !depends on field
 {
 	avPrint << "" << av::endl;
 	field.setDrawingOffset(calcOffsetForField());
+	Tile::gameState = &gameState;
 }
 
 void Game::Go()
@@ -54,33 +55,45 @@ void Game::UpdateModel()
 		if (e.GetCode() == 'R')
 		{
 			gameState = GameSt::Running;
+			showedMsg = false;
 			field.reset();
 		}
 		if(gameState != GameSt::GameOver)
+		{
 			ai.parseKB(e, wnd.mouse);
+		}
 	}
 	
-	while(gameState != GameSt::GameOver &&  !wnd.mouse.IsEmpty())
+	while(gameState != GameSt::GameOver && !wnd.mouse.IsEmpty())
 	{
 		Mouse::Event ev =  wnd.mouse.Read();
 		if(ev.GetType() == Mouse::Event::Type::LRelease
 		|| ev.GetType() == Mouse::Event::Type::RRelease)
 		{
 			Vei2 offset = calcOffsetForField();
-			ClickRes res = field.parseMouse(ev, offset);
-			if(res == ClickRes::GameOver) // returns true if click was fatal
-			{
-				gameState = GameSt::GameOver;
-				wnd.ShowMessageBox(L"You suck, man.", 
-								   L"\nHit 'R' and become better at this game.");
-			}
-			else if(res == ClickRes::GameWin)
-			{
-				gameState = GameSt::Win;
-				wnd.ShowMessageBox(L"You won!", 
-								   L"Nice job, man.\nHit 'R' to restart.");
-			}
+			field.parseMouse(ev, offset);
 		}
+	}
+
+	if(showedMsg)
+		return;
+
+	switch (gameState)
+	{
+		case GameSt::GameOver:
+        {
+			showedMsg = true;
+            wnd.ShowMessageBox(L"You suck, man.",
+                               L"\nHit 'R' and become better at this game.");
+        }
+			break;
+		case GameSt::Win:
+        {
+			showedMsg = true;
+            wnd.ShowMessageBox(L"You won!",
+                               L"Nice job, man.\nHit 'R' to restart.");
+        }
+			break;
 	}
 }
 

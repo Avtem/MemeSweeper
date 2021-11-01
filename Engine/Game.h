@@ -25,14 +25,7 @@
 #include "Graphics.h"
 #include "Field.h"
 #include "AI.h"
-
-
-enum class GameSt
-{
-	Running,
-	GameOver,
-	Win
-};
+#include "Enums.h"
 
 
 class Game
@@ -57,5 +50,6 @@ private:
 	GameSt gameState = GameSt::Running;
 	Field field;
 	AI ai;	// !depends on field
+	bool showedMsg = false;
 	/********************************/
 };

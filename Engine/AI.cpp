@@ -14,10 +14,14 @@ void AI::randClick() const
 	field.clickTile({x,y}, Mouse::Event::Type::LRelease);
 }
 
+void AI::doOnlyChoice()
+{
+}
+
 void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 {
     Vei2 tileInd = (mose.GetPosVei() -field.drawOff) /SpriteCodex::tileSize;
-    Vei2 arr[9];
+    Vei2 arr[9] = {Vei2(-1,-1)};
 
 	switch (event.GetCode())
 	{
