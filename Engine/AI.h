@@ -17,6 +17,6 @@ private:
     // gets positions of hidden adj.cells. Returns number of found hid.tiles
     int getHiddenTiles(const Vei2& index, Vei2& arr);
     void randClick() const;
-    void doOnlyChoice();
+    void flagObvious();
 };
 

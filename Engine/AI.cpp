@@ -14,8 +14,21 @@ void AI::randClick() const
 	field.clickTile({x,y}, Mouse::Event::Type::LRelease);
 }
 
-void AI::doOnlyChoice()
+void AI::flagObvious()
 {
+    Vei2 arr[9];
+    for(int i=0; i < field.getTilesCount(); ++i)
+    {
+        Tile& t = field.tiles[i];
+
+        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
+        if(t.numOfAdjMemes > 0 && t.isRevealed()
+        && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
+        {
+            for(int j=0; j < t.numOfAdjMemes; ++j)
+                field.tiles[arr->x +arr->y*field.tilesInW].setFlag(true);
+        }
+    }
 }
 
 void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
@@ -26,7 +39,7 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 	switch (event.GetCode())
 	{
 		case '1':   randClick();  break;
-		case '2':   getHiddenTiles(tileInd, *arr);  break;
+		case '2':   flagObvious();  break;
 		case '3':   OutputDebugString(L"3\n");  break;
 		case '4':   OutputDebugString(L"4\n");  break;
 		default:
