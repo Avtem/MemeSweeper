@@ -39,7 +39,7 @@ void AI::afterFlag()
         Tile& t = field.tiles[i];
 
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        if (t.isRevealed() && t.numOfAdjMemes > 0)
+        if (t.isRevealed() && t.numOfAdjMemes >= 0) // reveal for nums 0 as well!
         {
             const int hidCount = getHiddenTiles(ind, *arr);
             // check if the area satisfied
@@ -47,7 +47,7 @@ void AI::afterFlag()
             for(int j=0; j < hidCount; ++j)
             {
                 Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
-                if(t2.getObj() == ObjT::Meme && t2.getDrawSt() == DrawSt::Flag)
+                if(t2.getDrawSt() == DrawSt::Flag)
                    ++flaggedCount;
             }
 
@@ -59,7 +59,7 @@ void AI::afterFlag()
                     Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
                     if (t2.getDrawSt() != DrawSt::Flag)
                     {
-                        t2.reveal();
+                        t2.parseMouse(Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
                     }
                 }
@@ -78,10 +78,6 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 		case '1':   randClick();    break;
 		case '2':   flagObvious();  break;
 		case '3':   afterFlag();    break;
-		case '4':   OutputDebugString(L"4\n");  break;
-		default:
-			OutputDebugString(L"wa was that?\n");
-			break;
 	}
 }
 
