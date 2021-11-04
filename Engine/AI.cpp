@@ -26,7 +26,7 @@ void AI::flagObvious()
         && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
         {
             for(int j=0; j < t.numOfAdjMemes; ++j)
-                field.tiles[arr->x +arr->y*field.tilesInW].setFlag(true);
+                field.tiles[arr[j].x +arr[j].y*field.tilesInW].setFlag(true);
         }
     }
 }
