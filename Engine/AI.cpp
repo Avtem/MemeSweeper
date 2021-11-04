@@ -22,11 +22,48 @@ void AI::flagObvious()
         Tile& t = field.tiles[i];
 
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        if(t.numOfAdjMemes > 0 && t.isRevealed()
+        if(t.isRevealed() && t.numOfAdjMemes > 0
         && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
         {
             for(int j=0; j < t.numOfAdjMemes; ++j)
                 field.tiles[arr->x +arr->y*field.tilesInW].setFlag(true);
+        }
+    }
+}
+
+void AI::afterFlag()
+{
+    Vei2 arr[9];
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        Tile& t = field.tiles[i];
+
+        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
+        if (t.isRevealed() && t.numOfAdjMemes > 0)
+        {
+            const int hidCount = getHiddenTiles(ind, *arr);
+            // check if the area satisfied
+            int flaggedCount = 0;
+            for(int j=0; j < hidCount; ++j)
+            {
+                Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
+                if(t2.getObj() == ObjT::Meme && t2.getDrawSt() == DrawSt::Flag)
+                   ++flaggedCount;
+            }
+
+            // yay, we can reveal others!
+            if(flaggedCount == t.numOfAdjMemes)
+            {
+                for (int j = 0; j < hidCount; ++j)
+                {
+                    Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
+                    if (t2.getDrawSt() != DrawSt::Flag)
+                    {
+                        t2.reveal();
+                        field.checkWinCondition();
+                    }
+                }
+            }
         }
     }
 }
@@ -38,9 +75,9 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 
 	switch (event.GetCode())
 	{
-		case '1':   randClick();  break;
+		case '1':   randClick();    break;
 		case '2':   flagObvious();  break;
-		case '3':   OutputDebugString(L"3\n");  break;
+		case '3':   afterFlag();    break;
 		case '4':   OutputDebugString(L"4\n");  break;
 		default:
 			OutputDebugString(L"wa was that?\n");

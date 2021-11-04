@@ -18,5 +18,6 @@ private:
     int getHiddenTiles(const Vei2& index, Vei2& arr);
     void randClick() const;
     void flagObvious();
+    void afterFlag();
 };
 
