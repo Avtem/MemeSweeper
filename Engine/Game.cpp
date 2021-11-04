@@ -28,10 +28,9 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 5, 5, 0.15f),
+	field(gfx, 25, 25, 0.15f),
 	ai(field)	// !depends on field
 {
-	avPrint << "" << av::endl;
 	field.setDrawingOffset(calcOffsetForField());
 	Tile::gameState = &gameState;
 }
