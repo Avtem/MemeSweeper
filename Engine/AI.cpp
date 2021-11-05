@@ -81,6 +81,27 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 	}
 }
 
+std::vector<Vei2> AI::getAdjTilesInd(const Vei2& centerTile)
+{
+    std::vector<Vei2> vec;
+    vec.reserve(8);
+
+    Vei2 adjInd{ centerTile.x -1, centerTile.y -1 };
+    for (int i = 0; i < 9; ++i, ++adjInd.x)
+    {
+        if (i && i %3 == 0)
+        {
+            ++adjInd.y;
+            adjInd.x = centerTile.x-1;
+        }
+
+        if (field.tileIsValid(adjInd) && centerTile != adjInd)
+            vec.push_back(adjInd);
+    }
+
+    return vec;
+}
+
 int AI::getHiddenTiles(const Vei2& index, Vei2& arr)
 {
     Vei2 adjInd{ index.x -1, index.y -1 };
@@ -93,7 +114,7 @@ int AI::getHiddenTiles(const Vei2& index, Vei2& arr)
             adjInd.x = index.x-1;
         }
 
-        if (field.isTileIndexBad(adjInd))
+        if (!field.tileIsValid(adjInd))
             continue;
 
         Tile& tile = field.tiles[adjInd.x +adjInd.y *field.tilesInW];

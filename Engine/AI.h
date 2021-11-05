@@ -4,6 +4,7 @@
 #include "Mouse.h"
 #include "Vei2.h"
 #include "Tile.h"
+#include <vector>
 
 class AI
 {
@@ -20,5 +21,6 @@ private:
     void flagObvious();
     void afterFlag();
     Tile& tileAt(const Vei2& indexPos) const;
+    std::vector<Vei2> getAdjTilesInd(const Vei2& centerTile);
 };
 
