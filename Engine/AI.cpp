@@ -25,7 +25,7 @@ void AI::flagObvious()
         if(t.isRevealed() && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
         {
             for(int j=0; j < t.numOfAdjMemes; ++j)
-                field.tiles[arr[j].x +arr[j].y*field.tilesInW].setFlag(true);
+                tileAt(arr[j]).setFlag(true);
         }
     }
 }
@@ -44,27 +44,28 @@ void AI::afterFlag()
             // check if the area satisfied
             int flaggedCount = 0;
             for(int j=0; j < hidCount; ++j)
-            {
-                Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
-                if(t2.getDrawSt() == DrawSt::Flag)
+                if(tileAt(arr[j]).getDrawSt() == DrawSt::Flag)
                    ++flaggedCount;
-            }
 
             // yay, we can reveal others!
             if(flaggedCount == t.numOfAdjMemes)
             {
                 for (int j = 0; j < hidCount; ++j)
                 {
-                    Tile& t2 = field.tiles[arr[j].x +arr[j].y *field.tilesInW];
-                    if (t2.getDrawSt() != DrawSt::Flag)
+                    if (tileAt(arr[j]).getDrawSt() != DrawSt::Flag)
                     {
-                        t2.parseMouse(Mouse::Event::Type::LRelease);
+                        tileAt(arr[j]).parseMouse(Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
                     }
                 }
             }
         }
     }
+}
+
+Tile& AI::tileAt(const Vei2& indexPos) const
+{
+    return field.tiles[indexPos.x + indexPos.y *field.tilesInW];
 }
 
 void AI::parseKB(const Keyboard::Event& event, Mouse& mose)

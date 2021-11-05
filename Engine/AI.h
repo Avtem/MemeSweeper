@@ -3,7 +3,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Vei2.h"
-
+#include "Tile.h"
 
 class AI
 {
@@ -19,5 +19,6 @@ private:
     void randClick() const;
     void flagObvious();
     void afterFlag();
+    Tile& tileAt(const Vei2& indexPos) const;
 };
 
