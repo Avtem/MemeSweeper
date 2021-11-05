@@ -83,7 +83,7 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
 
 void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
 {
-    if (index.x < 0 || index.y < 0 ||  index.x > tilesInW -1 || index.y > tilesInH -1)
+    if(!tileIsValid(index))
         return;
 
     tiles[index.x +index.y *tilesInW].parseMouse(eventType);

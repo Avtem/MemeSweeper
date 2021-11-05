@@ -16,45 +16,45 @@ void AI::randClick() const
 
 void AI::flagObvious()
 {
-    Vei2 arr[9];
     for(int i=0; i < field.getTilesCount(); ++i)
     {
+        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
 
-        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        if(t.isRevealed() && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
+        auto hidTiles = getHiddenTiles(ind);
+        if(t.isRevealed() && hidTiles.size() == t.numOfAdjMemes)
         {
-            for(int j=0; j < t.numOfAdjMemes; ++j)
-                tileAt(arr[j]).setFlag(true);
+            for(Tile* adjT : hidTiles)
+                adjT->setFlag(true);
         }
     }
 }
 
 void AI::afterFlag()
 {
-    Vei2 arr[9];
     for (int i = 0; i < field.getTilesCount(); ++i)
     {
+        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
 
-        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        if (t.isRevealed() && t.numOfAdjMemes >= 0) // reveal for nums 0 as well!
+        if (t.isRevealed() && t.numOfAdjMemes >= 0)
         {
-            const int hidCount = getHiddenTiles(ind, *arr);
-            // check if the area satisfied
+            auto hidTiles = getHiddenTiles(ind);
+
+            // check if the area is complete
             int flaggedCount = 0;
-            for(int j=0; j < hidCount; ++j)
-                if(tileAt(arr[j]).getDrawSt() == DrawSt::Flag)
+            for(const Tile* adjT : hidTiles)
+                if(adjT->getDrawSt() == DrawSt::Flag)
                    ++flaggedCount;
 
-            // yay, we can reveal others!
+            // yay, we can reveal other tiles!
             if(flaggedCount == t.numOfAdjMemes)
             {
-                for (int j = 0; j < hidCount; ++j)
+                for(Tile* adjT : hidTiles)
                 {
-                    if (tileAt(arr[j]).getDrawSt() != DrawSt::Flag)
+                    if(!adjT->isRevealed() && adjT->getDrawSt() != DrawSt::Flag)
                     {
-                        tileAt(arr[j]).parseMouse(Mouse::Event::Type::LRelease);
+                        adjT->parseMouse(Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
                     }
                 }
@@ -81,7 +81,7 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 	}
 }
 
-std::vector<Vei2> AI::getAdjTilesInd(const Vei2& centerTile)
+std::vector<Vei2> AI::getAdjTilesInd(const Vei2& centerTile) const
 {
     std::vector<Vei2> vec;
     vec.reserve(8);
@@ -102,28 +102,16 @@ std::vector<Vei2> AI::getAdjTilesInd(const Vei2& centerTile)
     return vec;
 }
 
-int AI::getHiddenTiles(const Vei2& index, Vei2& arr)
+std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile)
 {
-    Vei2 adjInd{ index.x -1, index.y -1 };
-    int count = 0;
-    for (int i = 0; i < 9; ++i, ++adjInd.x)
-    {
-        if (i && i %3 == 0)
-        {
-            ++adjInd.y;
-            adjInd.x = index.x-1;
-        }
+    std::vector<Vei2> adjTiles = getAdjTilesInd(centerTile);
+    
+    std::vector<Tile*> hidTiles;
+    hidTiles.reserve(8);
+    
+    for(const Vei2& index : adjTiles)
+        if(tileAt(index).isRevealed() == false)
+            hidTiles.push_back(&tileAt(index));
 
-        if (!field.tileIsValid(adjInd))
-            continue;
-
-        Tile& tile = field.tiles[adjInd.x +adjInd.y *field.tilesInW];
-        if(index != adjInd && tile.isRevealed() == false)
-        {
-            (&arr)[count] = adjInd;
-            ++count;
-        }
-    }
-
-    return count;
+    return hidTiles;
 }

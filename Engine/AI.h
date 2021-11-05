@@ -15,12 +15,13 @@ public:
 private:
     class Field& field;
 
+    // gets 8 adj.tiles (if all are valid)
+    std::vector<Vei2> getAdjTilesInd(const Vei2& centerTile) const;
     // gets positions of hidden adj.cells. Returns number of found hid.tiles
-    int getHiddenTiles(const Vei2& index, Vei2& arr);
+    std::vector<Tile*> getHiddenTiles(const Vei2& centerTile);
     void randClick() const;
     void flagObvious();
     void afterFlag();
     Tile& tileAt(const Vei2& indexPos) const;
-    std::vector<Vei2> getAdjTilesInd(const Vei2& centerTile);
 };
 
