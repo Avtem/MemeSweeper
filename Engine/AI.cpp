@@ -22,7 +22,7 @@ void AI::flagObvious()
         Tile& t = field.tiles[i];
 
         auto hidTiles = getHiddenTiles(ind);
-        if(t.isRevealed() && hidTiles.size() == t.numOfAdjMemes)
+        if(t.isRevealed() && hidTiles.size() == size_t(t.numOfAdjMemes))
         {
             for(Tile* adjT : hidTiles)
                 adjT->setFlag(true);
