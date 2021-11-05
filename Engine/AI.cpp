@@ -22,8 +22,7 @@ void AI::flagObvious()
         Tile& t = field.tiles[i];
 
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        if(t.isRevealed() && t.numOfAdjMemes > 0
-        && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
+        if(t.isRevealed() && getHiddenTiles(ind, *arr) == t.numOfAdjMemes)
         {
             for(int j=0; j < t.numOfAdjMemes; ++j)
                 field.tiles[arr[j].x +arr[j].y*field.tilesInW].setFlag(true);
