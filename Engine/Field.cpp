@@ -137,7 +137,7 @@ void Field::revealAdjTiles(const Vei2& pos)
             ind.x = pos.x-1;
         }
 
-        if (isTileIndexBad(ind))
+        if (tileIsValid(ind) == false)
             continue;
 
         Tile& tile = tiles[ind.x +ind.y *tilesInW];
@@ -166,9 +166,9 @@ void Field::putMemes()
     }
 }
 
-bool Field::isTileIndexBad(const Vei2& index) const
+bool Field::tileIsValid(const Vei2& index) const
 {
-    return index.x < 0 || index.y < 0 || index.x >= tilesInW || index.y >= tilesInH;
+    return index.x >= 0 && index.y >= 0 && index.x < tilesInW && index.y < tilesInH;
 }
 
 void Field::putNumbers()
@@ -192,7 +192,7 @@ void Field::putNumbers()
                     nx = x-1;
                 }
 
-                if(isTileIndexBad({nx,ny}))
+                if(tileIsValid({nx,ny}) == false)
                     continue;
 
                 count += tiles[nx +ny*tilesInW].getObj() == ObjT::Meme ? 1 : 0;
