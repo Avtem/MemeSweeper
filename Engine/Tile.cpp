@@ -11,23 +11,9 @@ void Tile::parseMouse(Mouse::Event::Type mouseEv)
         return;
 
     if(mouseEv == lmbUp && drawState != DrawSt::Flag)
-    {
-        switch (obj)
-        {
-            case ObjT::Meme:
-                drawState = DrawSt::FatalMeme;
-                revealed = true;
-                *gameState = GameSt::GameOver;
-            case ObjT::Number:
-                revealed = true;
-                break;
-        }
-    }
-    else if (mouseEv == rmbUp)
-    {
-        // toggle flag
+        reveal();
+    else if (mouseEv == rmbUp)  // toggle flag
         drawState = drawState == DrawSt::Normal ? DrawSt::Flag : DrawSt::Normal;
-    }
 }
 
 void Tile::revealForLoser()
@@ -83,5 +69,14 @@ void Tile::setFlag(bool flagged)
 
 void Tile::reveal()
 {
-    revealed = true;
+    switch (obj)
+    {
+        case ObjT::Meme:
+            drawState = DrawSt::FatalMeme;
+            revealed = true;
+            *gameState = GameSt::GameOver;
+        case ObjT::Number:
+            revealed = true;
+            break;
+    }
 }

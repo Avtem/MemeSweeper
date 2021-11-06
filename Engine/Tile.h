@@ -8,6 +8,7 @@ class Tile
 {
 public:
     int numOfAdjMemes = -1; // if no number!
+    Vei2 index;
 //////////// member functions
     void parseMouse(Mouse::Event::Type mouseEv); // returns TRUE if you hit a meme
     void revealForLoser();

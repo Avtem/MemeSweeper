@@ -12,16 +12,19 @@ public:
     AI(class Field& inField);
     void parseKB(const Keyboard::Event& event, Mouse& mose);     // avDebug: mose for debug only
 
+    // returns true if all mines are flagged and other tiles are revealed
+    bool areaIsSolved(const Vei2& centerTile);
 private:
     class Field& field;
 
-    // gets 8 adj.tiles (if all are valid)
-    std::vector<Vei2> getAdjTilesInd(const Vei2& centerTile) const;
-    // gets positions of hidden adj.cells. Returns number of found hid.tiles
+    std::vector<Tile*> getAdjTiles(const Vei2& centerTile);
     std::vector<Tile*> getHiddenTiles(const Vei2& centerTile);
+    std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2);
+    std::vector<Tile*> fullyOverlaps(const Tile* t1, const Tile* t2) const; // returns non-overlapped tiles
     void randClick() const;
     void flagObvious();
     void afterFlag();
+    void traitor();
     Tile& tileAt(const Vei2& indexPos) const;
 };
 

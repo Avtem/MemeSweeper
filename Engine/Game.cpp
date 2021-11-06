@@ -57,6 +57,8 @@ void Game::UpdateModel()
 			showedMsg = false;
 			field.reset();
 		}
+		if(e.GetCode() == VK_ESCAPE)
+			PostQuitMessage(0);
 		if(gameState != GameSt::GameOver)
 		{
 			ai.parseKB(e, wnd.mouse);
