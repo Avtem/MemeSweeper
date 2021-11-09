@@ -79,9 +79,44 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
     
+    parseFirstClick(tileInd, event);
+
     clickTile(tileInd, event.GetType());
     AI ai(*this);
     //ai.traitor(tileInd);
+}
+
+void Field::parseFirstClick(Vei2 tileInd, Mouse::Event event)
+{    
+    if(!firstClick || !tileIsValid(tileInd))
+        return;
+
+    int spawnAttempts = 0;
+    switch (firstClickResult)
+    {
+        case FirstClickReveal::Anything:
+            break;
+        case FirstClickReveal::AnyNumber:
+            while(tileAt(tileInd).getObj() == ObjT::Meme)
+            {
+                reset();
+                ++spawnAttempts;
+            }
+            break;
+        case FirstClickReveal::Num0Only:
+            while (tileAt(tileInd).numOfAdjMemes != 0)
+            {
+                reset();
+                ++spawnAttempts;
+            }
+            break;
+    }
+
+    WCHAR buff[5] = {0};
+    swprintf_s(buff, L"% 3i", spawnAttempts);
+    avPrint << L"We reset the field " << buff << " times, so that you can"
+        << " enjoy clicking on a tile with 0 memes around it." << av::endl;
+    firstClick = false;
 }
 
 void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
@@ -206,8 +241,15 @@ void Field::putNumbers()
     }
 }
 
+Tile& Field::tileAt(const Vei2& index) const
+{
+    return tiles[index.x +index.y *tilesInW];
+}
+
 void Field::reset()
 {
+    firstClick = true;
+
     for(int i=0; i < getTilesCount(); ++i)
     {
         tiles[i].reset();

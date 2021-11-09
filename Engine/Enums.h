@@ -24,7 +24,14 @@ enum class DrawSt // drawing state
 };
 enum class ClickRes
 {
-    Nothing = 0,
+    Nothing,
     GameOver,
     GameWin
+};
+
+enum class FirstClickReveal
+{
+    Anything,
+    Num0Only,
+    AnyNumber
 };

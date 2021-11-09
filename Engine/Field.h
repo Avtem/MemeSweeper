@@ -3,6 +3,7 @@
 #include "Tile.h"
 #include "AI.h"
 #include <random>
+#include "Enums.h"
 
 class Field
 {
@@ -11,6 +12,7 @@ public:
     ~Field();
     void draw() const;
     void parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
+    void parseFirstClick(Vei2 tileInd, Mouse::Event event);
     void clickTile(Vei2 index, Mouse::Event::Type eventType);
     void checkWinCondition() const;
     void reset();
@@ -27,6 +29,8 @@ private:
     float memesFillness;
     Tile *tiles = nullptr;
     Vei2 drawOff;
+    bool firstClick = true;
+    const FirstClickReveal firstClickResult = FirstClickReveal::Num0Only;
     const int borderThickness = 5;
     static std::random_device randDevice;
     static std::mt19937 mt;
@@ -39,5 +43,6 @@ private:
     void putMemes();
     bool tileIsValid(const Vei2& index) const;
     void putNumbers();
+    Tile& tileAt(const Vei2& index) const;
 };
 
