@@ -188,12 +188,15 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 	{
 		const POINTS pt = MAKEPOINTS( lParam );
 		mouse.OnLeftPressed( pt.x,pt.y );
+		SetForegroundWindow(hWnd);
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
 		const POINTS pt = MAKEPOINTS( lParam );
 		mouse.OnRightPressed( pt.x,pt.y );
+		SetForegroundWindow(hWnd);
+
 		break;
 	}
 	case WM_LBUTTONUP:
