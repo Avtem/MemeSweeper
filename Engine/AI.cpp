@@ -8,15 +8,11 @@ AI::AI(Field& inField)
 
 bool AI::areaIsSolved(const Vei2& centerTile)
 {
-    if(!tileAt(centerTile).isRevealed())
+    Tile& t = tileAt(centerTile);
+    if(!t.isRevealed())
         return false;
 
-    auto adjTiles = getHiddenTiles(centerTile);
-    for(auto adjT : adjTiles)
-        if(adjT->getDrawSt() != DrawSt::Flag)
-            return false;
-
-    return adjTiles.size() == size_t(tileAt(centerTile).numOfAdjMemes);
+    return getAdjFlagCount(centerTile) == t.numOfAdjMemes;
 }
 
 void AI::randClick() const
@@ -34,7 +30,7 @@ void AI::flagObvious()
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
 
-        auto hidTiles = getHiddenTiles(ind);
+        auto hidTiles = getHiddenTiles(ind, true);
         if(t.isRevealed() && hidTiles.size() == size_t(t.numOfAdjMemes))
         {
             for(Tile* adjT : hidTiles)
@@ -52,7 +48,7 @@ void AI::afterFlag()
 
         if (t.isRevealed() && t.numOfAdjMemes >= 0)
         {
-            auto hidTiles = getHiddenTiles(ind);
+            auto hidTiles = getHiddenTiles(ind, true);
 
             // check if the area is complete
             int flaggedCount = 0;
@@ -76,12 +72,16 @@ void AI::afterFlag()
     }
 }
 
-void AI::traitor()
+void AI::traitor(const Vei2& centerTile)
 {
+    afterFlag();
+
     for(int i=0; i < field.getTilesCount(); ++i)
     {
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
+        //Vei2 ind = centerTile; // AVDEBUG
+        //Tile& t = tileAt(ind);
 
         if(!t.isRevealed() || areaIsSolved(ind))
             continue;
@@ -93,11 +93,21 @@ void AI::traitor()
             if(!adj->isRevealed() || areaIsSolved(adj->index))
                 continue;
 
-            auto nonOverlap = fullyOverlaps(&t, adj);
-            if(nonOverlap.size())
+            // if t overlaps adj.cell, reveal all unrevealed tiles for t
+            auto overlap = getHidOverlapTiles(t.index, adj->index);
+            auto adjHidTiles = getHiddenTiles(adj->index, false);
+            excludeTiles(adjHidTiles, overlap);
+            
+            // t(traitor) = solvable, adj = not
+            if(solvableWithoutTiles(&t, overlap)
+            && impossibleWithoutTiles(adj, overlap) )
             {
-                for(Tile* t : nonOverlap)
-                    t->reveal();
+                auto nonOverlap = getNonOverlapTiles(&t, adj);
+                for(Tile* tNonOv : nonOverlap)
+                {
+                    //tNonOv->reveal();
+                    field.clickTile(tNonOv->index, Mouse::Event::Type::LRelease);
+                }
             }
         }
     }
@@ -108,13 +118,13 @@ Tile& AI::tileAt(const Vei2& indexPos) const
     return field.tiles[indexPos.x + indexPos.y *field.tilesInW];
 }
 
-std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2)
+std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const
 {
     std::vector<Tile*> overlap;
     overlap.reserve(4); // 2 areas can have 4 tiles overlapping max
 
-    auto area1 = getHiddenTiles(cenInd1);
-    auto area2 = getHiddenTiles(cenInd2);
+    auto area1 = getHiddenTiles(cenInd1, false);
+    auto area2 = getHiddenTiles(cenInd2, false);
 
     for(Tile* t1 : area1)
     {
@@ -125,13 +135,63 @@ std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenIn
     return overlap;
 }
 
-std::vector<Tile*> AI::fullyOverlaps(const Tile* t1, const Tile* t2) const
+// t is the guy who has nonOverlap
+std::vector<Tile*> AI::getNonOverlapTiles(const Tile* t, const Tile* adjT) const
 {
     std::vector<Tile*> nonOverlap;
+    auto overlap = getHidOverlapTiles(t->index, adjT->index);
 
-
+    size_t requiredFlagCount = adjT->numOfAdjMemes -getAdjFlagCount(adjT->index);
+    if(overlap.size() >= requiredFlagCount)
+    {
+        // exclude overlaps for t
+        nonOverlap = getHiddenTiles(t->index, false);
+        excludeTiles(nonOverlap, overlap);
+    }
 
     return nonOverlap;
+}
+
+void AI::excludeTiles(std::vector<Tile*>& mainVec,
+                                     std::vector<Tile*>& tilesToExclude) const
+{
+    for(int i=mainVec.size() -1; i >= 0; --i)
+    {
+        for(const Tile* texc : tilesToExclude)
+            if(mainVec.at(i)->index == texc->index)
+            {
+                mainVec.erase(mainVec.begin() +i);
+                break;
+            }
+    }
+}
+
+// 1 2 3 4 5
+bool AI::solvableWithoutTiles(const Tile* t, std::vector<Tile*>& tilesToExclude) const
+{
+    auto remainingTiles = getHiddenTiles(t->index, false);
+    excludeTiles(remainingTiles, tilesToExclude);
+    
+    int lackCount = t->numOfAdjMemes -getAdjFlagCount(t->index);
+    return lackCount == 1 && (int)remainingTiles.size() >= lackCount;
+}
+
+bool AI::impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const
+{
+    auto adjTiles = getHiddenTiles(t->index, true);
+    excludeTiles(adjTiles, overlap);
+    return (int)adjTiles.size() < t->numOfAdjMemes;
+}
+
+int AI::getAdjFlagCount(const Vei2& centerTile) const
+{
+    auto adjT = getAdjTiles(centerTile);
+    int count = 0;
+    for(const Tile* t : adjT)
+        if(t->getDrawSt() == DrawSt::Flag)
+            ++count;
+
+    return count;
 }
 
 void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
@@ -144,10 +204,11 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 		case '1':   randClick();    break;
 		case '2':   flagObvious();  break;
 		case '3':   afterFlag();    break;
+        case '4':   traitor({0,0});    break;
 	}
 }
 
-std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile)
+std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile) const
 {
     std::vector<Tile*> vec;
     vec.reserve(8);
@@ -168,7 +229,7 @@ std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile)
     return vec;
 }
 
-std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile)
+std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile, bool includeFlagged) const
 {
     std::vector<Tile*> adjTiles = getAdjTiles(centerTile);
 
@@ -176,8 +237,12 @@ std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile)
     hidTiles.reserve(8);
 
     for (Tile* t : adjTiles)
-        if (t->isRevealed() == false)
+    {
+        bool include = includeFlagged ? true
+                                      : !(t->getDrawSt() == DrawSt::Flag);
+        if (!t->isRevealed() && include)
             hidTiles.push_back(t);
+    }
 
     return hidTiles;
 }
