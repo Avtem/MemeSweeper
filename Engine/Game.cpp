@@ -54,29 +54,29 @@ void Game::UpdateModel()
 			continue;
 
 		if (e.GetCode() == 'R')
-		{
-			gameState = GameSt::Running;
-			showedMsg = false;
-			field.reset();
-			sndWin.StopAll();
-			sndLose.StopAll();
-		}
+			restartGame();
 		if(e.GetCode() == VK_ESCAPE)
 			PostQuitMessage(0);
 		if(gameState != GameSt::GameOver)
-		{
 			ai.parseKB(e, wnd.mouse);
-		}
 	}
 	
-	while(gameState != GameSt::GameOver && !wnd.mouse.IsEmpty())
+	while(!wnd.mouse.IsEmpty())
 	{
-		Mouse::Event ev =  wnd.mouse.Read();
-		if(ev.GetType() == Mouse::Event::Type::LRelease
-		|| ev.GetType() == Mouse::Event::Type::RRelease)
+        Mouse::Event ev = wnd.mouse.Read();
+		
+		if(gameState != GameSt::Running)
 		{
-			Vei2 offset = calcOffsetForField();
-			field.parseMouse(ev, offset);
+			if(ev.GetType() == Mouse::Event::Type::RRelease)
+				restartGame();
+			
+			return;
+		}
+		else if ( ev.GetType() == Mouse::Event::Type::LRelease
+		     ||   ev.GetType() == Mouse::Event::Type::RRelease )
+		{
+            Vei2 offset = calcOffsetForField();
+            field.parseMouse(ev, offset);
 		}
 	}
 
@@ -102,6 +102,15 @@ void Game::UpdateModel()
         }
 			break;
 	}
+}
+
+void Game::restartGame()
+{
+	gameState = GameSt::Running;
+	showedMsg = false;
+	field.reset();
+	sndWin.StopAll();
+	sndLose.StopAll();
 }
 
 Vei2 Game::calcOffsetForField() const

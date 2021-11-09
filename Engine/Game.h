@@ -38,6 +38,7 @@ public:
 private:
 	void ComposeFrame();
 	void UpdateModel();
+	void restartGame();
 	/********************************/
 	/*  User Functions              */
 	Vei2 calcOffsetForField() const;
