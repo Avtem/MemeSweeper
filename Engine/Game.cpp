@@ -28,8 +28,10 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 15, 12, 0.22f),
-	ai(field)	// !depends on field
+	field(gfx, 7, 10, 0.22f),
+	ai(field),	// !depends on field
+	sndWin(L"snd\\win.wav"),
+	sndLose(L"snd\\lose.wav")
 {
 	field.setDrawingOffset(calcOffsetForField());
 	Tile::gameState = &gameState;
@@ -56,6 +58,8 @@ void Game::UpdateModel()
 			gameState = GameSt::Running;
 			showedMsg = false;
 			field.reset();
+			sndWin.StopAll();
+			sndLose.StopAll();
 		}
 		if(e.GetCode() == VK_ESCAPE)
 			PostQuitMessage(0);
@@ -84,7 +88,7 @@ void Game::UpdateModel()
 		case GameSt::GameOver:
         {
 			showedMsg = true;
-
+			sndLose.Play(1.f, 0.3f);
             //wnd.ShowMessageBox(L"You suck, man.",
             //                   L"\nHit 'R' and become better at this game.");
         }
@@ -92,6 +96,7 @@ void Game::UpdateModel()
 		case GameSt::Win:
         {
 			showedMsg = true;
+			sndWin.Play(1.f, 0.3f);
             //wnd.ShowMessageBox(L"You won!",
             //                   L"Nice job, man.\nHit 'R' to restart.");
         }

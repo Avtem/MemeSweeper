@@ -26,7 +26,7 @@
 #include "Field.h"
 #include "AI.h"
 #include "Enums.h"
-
+#include "Sound.h"
 
 class Game
 {
@@ -51,5 +51,7 @@ private:
 	Field field;
 	AI ai;	// !depends on field
 	bool showedMsg = false;
+	Sound sndLose;
+	Sound sndWin;
 	/********************************/
 };
