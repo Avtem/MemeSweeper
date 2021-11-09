@@ -28,7 +28,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 25, 25, 0.15f),
+	field(gfx, 15, 12, 0.22f),
 	ai(field)	// !depends on field
 {
 	field.setDrawingOffset(calcOffsetForField());
@@ -84,15 +84,16 @@ void Game::UpdateModel()
 		case GameSt::GameOver:
         {
 			showedMsg = true;
-            wnd.ShowMessageBox(L"You suck, man.",
-                               L"\nHit 'R' and become better at this game.");
+
+            //wnd.ShowMessageBox(L"You suck, man.",
+            //                   L"\nHit 'R' and become better at this game.");
         }
 			break;
 		case GameSt::Win:
         {
 			showedMsg = true;
-            wnd.ShowMessageBox(L"You won!",
-                               L"Nice job, man.\nHit 'R' to restart.");
+            //wnd.ShowMessageBox(L"You won!",
+            //                   L"Nice job, man.\nHit 'R' to restart.");
         }
 			break;
 	}

@@ -1,4 +1,4 @@
 #Traitor (by solving one of the fields other becomes broken)
 - needs 2 UNSOLVED adj. fields
-- one field contains all unrevealed cells of other field + #0(its own unrevealed cells)
+- one field contains all hidden cells of other field + its own hidden cells - #0
 - if putting a mine in #0 solves the field, it's a traitor!

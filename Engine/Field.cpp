@@ -81,6 +81,7 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     
     clickTile(tileInd, event.GetType());
     AI ai(*this);
+    //ai.traitor(tileInd);
 }
 
 void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
@@ -210,7 +211,7 @@ void Field::reset()
     for(int i=0; i < getTilesCount(); ++i)
     {
         tiles[i].reset();
-        tiles[i].index = { i %tilesInW, i /tilesInH };
+        tiles[i].index = { i %tilesInW, i /tilesInW };
     }
 
     putMemes();
