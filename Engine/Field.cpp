@@ -78,17 +78,16 @@ void Field::draw() const
 void Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
-    
-    parseFirstClick(tileInd, event);
-
+     
     clickTile(tileInd, event.GetType());
+    
     AI ai(*this);
     //ai.traitor(tileInd);
 }
 
-void Field::parseFirstClick(Vei2 tileInd, Mouse::Event event)
+void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
 {    
-    if(!firstClick || !tileIsValid(tileInd))
+    if(!firstClick || !tileIsValid(tileInd) || eventType == rmbUp)
         return;
 
     int spawnAttempts = 0;
@@ -99,14 +98,14 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event event)
         case FirstClickReveal::AnyNumber:
             while(tileAt(tileInd).getObj() == ObjT::Meme)
             {
-                reset();
+                reset(false);
                 ++spawnAttempts;
             }
             break;
         case FirstClickReveal::Num0Only:
             while (tileAt(tileInd).numOfAdjMemes != 0)
             {
-                reset();
+                reset(false);
                 ++spawnAttempts;
             }
             break;
@@ -124,7 +123,10 @@ void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
     if(!tileIsValid(index))
         return;
 
-    tiles[index.x +index.y *tilesInW].parseMouse(eventType);
+    if (firstClick)
+        parseFirstClick(index, eventType);
+
+    tileAt(index).parseMouse(eventType);
     if (*Tile::gameState == GameSt::GameOver)
     {
         revealEverything();
@@ -162,7 +164,7 @@ void Field::revealEverything()
 void Field::revealAdjTiles(const Vei2& pos)
 {
     // terminate condition for the recursion
-    if(0 != tiles[pos.x +pos.y *tilesInW].numOfAdjMemes)
+    if(0 != tileAt(pos).numOfAdjMemes || tileAt(pos).getDrawSt() == DrawSt::Flag)
         return;
 
     // reveal all 9 tiles around POS
@@ -178,8 +180,10 @@ void Field::revealAdjTiles(const Vei2& pos)
         if (tileIsValid(ind) == false)
             continue;
 
-        Tile& tile = tiles[ind.x +ind.y *tilesInW];
-        if (tile.getObj() != ObjT::Meme && false == tile.isRevealed())
+        Tile& tile = tileAt(ind);
+        if (tile.getObj() == ObjT::Number 
+        && !tile.isRevealed()
+        && tile.getDrawSt() != DrawSt::Flag)
         {
             tile.reveal();
             revealAdjTiles(ind);    // recurse!
@@ -246,13 +250,13 @@ Tile& Field::tileAt(const Vei2& index) const
     return tiles[index.x +index.y *tilesInW];
 }
 
-void Field::reset()
+void Field::reset(bool resetFlags)
 {
     firstClick = true;
 
     for(int i=0; i < getTilesCount(); ++i)
     {
-        tiles[i].reset();
+        tiles[i].reset(resetFlags);
         tiles[i].index = { i %tilesInW, i /tilesInW };
     }
 

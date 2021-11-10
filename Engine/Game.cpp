@@ -28,7 +28,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 7, 10, 0.22f),
+	field(gfx, 16, 16, 0.12f),
 	ai(field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav")
@@ -57,7 +57,7 @@ void Game::UpdateModel()
 			restartGame();
 		if(e.GetCode() == VK_ESCAPE)
 			PostQuitMessage(0);
-		if(gameState != GameSt::GameOver)
+		if(gameState == GameSt::Running)
 			ai.parseKB(e, wnd.mouse);
 	}
 	
@@ -80,14 +80,14 @@ void Game::UpdateModel()
 		}
 	}
 
-	if(showedMsg)
+	if(playedSnd)
 		return;
 
 	switch (gameState)
 	{
 		case GameSt::GameOver:
         {
-			showedMsg = true;
+			playedSnd = true;
 			sndLose.Play(1.f, 0.3f);
             //wnd.ShowMessageBox(L"You suck, man.",
             //                   L"\nHit 'R' and become better at this game.");
@@ -95,7 +95,7 @@ void Game::UpdateModel()
 			break;
 		case GameSt::Win:
         {
-			showedMsg = true;
+			playedSnd = true;
 			sndWin.Play(1.f, 0.3f);
             //wnd.ShowMessageBox(L"You won!",
             //                   L"Nice job, man.\nHit 'R' to restart.");
@@ -107,7 +107,7 @@ void Game::UpdateModel()
 void Game::restartGame()
 {
 	gameState = GameSt::Running;
-	showedMsg = false;
+	playedSnd = false;
 	field.reset();
 	sndWin.StopAll();
 	sndLose.StopAll();

@@ -12,10 +12,10 @@ public:
     ~Field();
     void draw() const;
     void parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
-    void parseFirstClick(Vei2 tileInd, Mouse::Event event);
+    void parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType);
     void clickTile(Vei2 index, Mouse::Event::Type eventType);
     void checkWinCondition() const;
-    void reset();
+    void reset(bool resetFlags = true);
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;
     int getRand() const;

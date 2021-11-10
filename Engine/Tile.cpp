@@ -28,12 +28,14 @@ void Tile::revealForLoser()
         drawState = DrawSt::HiddenMeme;
 }
 
-void Tile::reset()
+void Tile::reset(bool resetFlag)
 {
     numOfAdjMemes = -1;
     revealed = false;
     obj = ObjT::Number;
-    drawState = DrawSt::Normal;
+
+    if(resetFlag)
+        drawState = DrawSt::Normal;
 }
 
 ObjT Tile::getObj() const

@@ -51,7 +51,7 @@ private:
 	GameSt gameState = GameSt::Running;
 	Field field;
 	AI ai;	// !depends on field
-	bool showedMsg = false;
+	bool playedSnd = false;
 	Sound sndLose;
 	Sound sndWin;
 	/********************************/

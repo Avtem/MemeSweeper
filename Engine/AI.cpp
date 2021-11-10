@@ -196,9 +196,6 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
 
 void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 {
-    Vei2 tileInd = (mose.GetPosVei() -field.drawOff) /SpriteCodex::tileSize;
-    Vei2 arr[9] = {Vei2(-1,-1)};
-
 	switch (event.GetCode())
 	{
 		case '1':   randClick();    break;
