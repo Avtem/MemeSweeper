@@ -31,7 +31,8 @@ private:
     void randClick() const;
     void flagObvious();
     void afterFlag();
-    void traitor(const Vei2& centerTile);
+    void traitor();
+    void useEverything();
     Tile& tileAt(const Vei2& indexPos) const;
 };
 

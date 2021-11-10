@@ -72,7 +72,7 @@ void AI::afterFlag()
     }
 }
 
-void AI::traitor(const Vei2& centerTile)
+void AI::traitor()
 {
     afterFlag();
 
@@ -80,8 +80,6 @@ void AI::traitor(const Vei2& centerTile)
     {
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
-        //Vei2 ind = centerTile; // AVDEBUG
-        //Tile& t = tileAt(ind);
 
         if(!t.isRevealed() || areaIsSolved(ind))
             continue;
@@ -104,12 +102,18 @@ void AI::traitor(const Vei2& centerTile)
             {
                 auto nonOverlap = getNonOverlapTiles(&t, adj);
                 for(Tile* tNonOv : nonOverlap)
-                {
-                    //tNonOv->reveal();
                     field.clickTile(tNonOv->index, Mouse::Event::Type::LRelease);
-                }
             }
         }
+    }
+}
+
+void AI::useEverything()
+{
+    for(int i=0; i < 15; ++i)
+    {
+        flagObvious();
+        traitor();
     }
 }
 
@@ -201,7 +205,8 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 		case '1':   randClick();    break;
 		case '2':   flagObvious();  break;
 		case '3':   afterFlag();    break;
-        case '4':   traitor({0,0});    break;
+        case '4':   traitor();      break;
+        case 'W':   useEverything();break;
 	}
 }
 
