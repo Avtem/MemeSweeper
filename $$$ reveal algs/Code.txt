@@ -1,4 +1,19 @@
+#Rand click
+- just clicks in a random tile
+
+#Flag obvious
+- find area where hidden tiles == numberOfAdjTiles
+- flag all hidden tiles
+
+#Afterflag
+- find area where flag count == numberOfAdjTiles
+- reveal all hidden tiles that are not flagged
+
 #Traitor (by solving one of the fields other becomes broken)
 - needs 2 UNSOLVED adj. fields
 - one field contains all hidden cells of other field + its own hidden cells - #0
 - if putting a mine in #0 solves the field, it's a traitor!
+
+#I know where the others
+- find two adjacent non-solved areas
+- if adj.getHiddenCount(area(including flagged) -overlap) + t.requiredCountToFinish == adj.numberOfAdjTiles, then adj.hidtiles.exclude(overlap).flag()
