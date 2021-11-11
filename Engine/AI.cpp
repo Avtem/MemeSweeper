@@ -79,7 +79,7 @@ void AI::traitor()
     for(int i=0; i < field.getTilesCount(); ++i)
     {
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
-        Tile& t = field.tiles[i];
+        Tile& t = field.tiles[i];   // our main tile (that we "click")
 
         if(!t.isRevealed() || areaIsSolved(ind))
             continue;
@@ -108,12 +108,48 @@ void AI::traitor()
     }
 }
 
+void AI::iKnowWhereTheOthers()
+{
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
+        Tile& t = field.tiles[i]; // our main tile (that we "click")
+
+        if (!t.isRevealed() || areaIsSolved(ind))
+            continue;
+
+        // find unsolved adjacent area
+        auto adjTiles = getAdjTiles(ind);
+        for (const Tile* adj : adjTiles)
+        {
+            if (!adj->isRevealed() || areaIsSolved(adj->index))
+                continue;
+
+            auto overlap = getHidOverlapTiles(t.index, adj->index);
+            auto tHid = getHiddenTiles(t.index, false);
+            auto adjHid = getHiddenTiles(adj->index, false);
+            excludeTiles(adjHid, overlap);
+            
+            // t is solvable (with only overlap) && adj is 4-1 == 3
+            //overlap.size() == tHid.size() &&
+            if(areaIsSolvable(t)
+            && adjHid.size()
+            && requiredCountToSolve(*adj) -requiredCountToSolve(t) == adjHid.size())
+            {
+                for (Tile* tNonOv : adjHid)
+                    tNonOv->setFlag(true); 
+            }
+        }
+    }
+}
+
 void AI::useEverything()
 {
     for(int i=0; i < 15; ++i)
     {
         flagObvious();
         traitor();
+        iKnowWhereTheOthers();
     }
 }
 
@@ -170,14 +206,14 @@ void AI::excludeTiles(std::vector<Tile*>& mainVec,
     }
 }
 
-// 1 2 3 4 5
+
 bool AI::solvableWithoutTiles(const Tile* t, std::vector<Tile*>& tilesToExclude) const
 {
     auto remainingTiles = getHiddenTiles(t->index, false);
     excludeTiles(remainingTiles, tilesToExclude);
     
-    int lackCount = t->numOfAdjMemes -getAdjFlagCount(t->index);
-    return lackCount == 1 && (int)remainingTiles.size() >= lackCount;
+    return requiredCountToSolve(*t) == 1 
+        && (int)remainingTiles.size() >= requiredCountToSolve(*t);
 }
 
 bool AI::impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const
@@ -185,6 +221,17 @@ bool AI::impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) cons
     auto adjTiles = getHiddenTiles(t->index, true);
     excludeTiles(adjTiles, overlap);
     return (int)adjTiles.size() < t->numOfAdjMemes;
+}
+
+bool AI::areaIsSolvable(const Tile& t) const
+{
+    auto hidTiles = getHiddenTiles(t.index, false);
+    return int(hidTiles.size()) >= requiredCountToSolve(t);
+}
+
+int AI::requiredCountToSolve(const Tile& t) const
+{
+    return t.numOfAdjMemes - getAdjFlagCount(t.index);
 }
 
 int AI::getAdjFlagCount(const Vei2& centerTile) const
@@ -202,11 +249,13 @@ void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
 {
 	switch (event.GetCode())
 	{
-		case '1':   randClick();    break;
-		case '2':   flagObvious();  break;
-		case '3':   afterFlag();    break;
-        case '4':   traitor();      break;
-        case 'W':   useEverything();break;
+		case '1':   randClick();             break;
+		case '2':   flagObvious();           break;
+		case '3':   afterFlag();             break;
+        case '4':   traitor();               break;
+        case '5':   iKnowWhereTheOthers();   break;
+        case 'W':   useEverything();         break;
+        case 'Q':   randClick(); useEverything(); break;
 	}
 }
 

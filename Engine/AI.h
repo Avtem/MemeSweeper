@@ -27,11 +27,14 @@ private:
                                      std::vector<Tile*>& tilesToExclude) const;
     bool solvableWithoutTiles(const Tile* t, std::vector<Tile*>& tilesToExclude) const;
     bool impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const;
+    bool areaIsSolvable(const Tile& t) const;
+    int requiredCountToSolve (const Tile& t) const;
     int getAdjFlagCount(const Vei2& centerTile) const;
     void randClick() const;
     void flagObvious();
     void afterFlag();
     void traitor();
+    void iKnowWhereTheOthers();
     void useEverything();
     Tile& tileAt(const Vei2& indexPos) const;
 };
