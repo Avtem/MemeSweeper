@@ -28,7 +28,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 15, 15, 0.14f),
+	field(gfx, 16, 16, 0.15625f),
 	ai(field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav")
@@ -53,10 +53,15 @@ void Game::UpdateModel()
 		if(e.IsPress()) // ignore pressings
 			continue;
 
-		if (e.GetCode() == 'R')
-			restartGame();
-		if(e.GetCode() == VK_ESCAPE)
-			PostQuitMessage(0);
+		switch (e.GetCode())
+		{
+			case 'R':			restartGame();		    break;
+			case VK_ESCAPE:		PostQuitMessage(0);		break;
+			case VK_SPACE: 
+				avPrint << "Memes left: " << field.getRemainingMemeCount() << av::endl;		    
+				break;
+		}
+
 		if(gameState == GameSt::Running)
 			ai.parseKB(e, wnd.mouse);
 	}

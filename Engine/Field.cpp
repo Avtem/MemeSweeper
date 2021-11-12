@@ -146,7 +146,7 @@ void Field::checkWinCondition() const
     for(int i=0; i < getTilesCount(); ++i)
         hiddenTilesCount += !tiles[i].isRevealed() ? 1 : 0;
 
-    if (int(getTilesCount() *memesFillness) == hiddenTilesCount)
+    if (getMemeCount() == hiddenTilesCount)
         *Tile::gameState = GameSt::Win;
 }
 
@@ -193,9 +193,7 @@ void Field::revealAdjTiles(const Vei2& pos)
 
 void Field::putMemes()
 {
-    int memesCount = int(getTilesCount() *memesFillness);
-
-    for (int i = 0; i < memesCount; ++i)
+    for (int i = 0; i < getMemeCount(); ++i)
     {
         int x{ 0 };
         int y{ 0 };
@@ -277,4 +275,18 @@ Vei2 Field::getSizeInPx() const
 int Field::getRand() const
 {
     return intDistr(mt);
+}
+
+int Field::getMemeCount() const
+{
+    return int(getTilesCount() *memesFillness);
+}
+
+int Field::getRemainingMemeCount() const
+{
+    int flaggedCount = 0;
+    for (int i = 0; i < getTilesCount(); ++i)
+        flaggedCount += tiles[i].getDrawSt() == DrawSt::Flag ? 1 : 0;
+
+    return getMemeCount() -flaggedCount;
 }
