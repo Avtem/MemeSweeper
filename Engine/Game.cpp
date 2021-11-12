@@ -63,12 +63,14 @@ void Game::UpdateModel()
 		}
 
 		if(gameState == GameSt::Running)
-			ai.parseKB(e, wnd.mouse);
+			ai.parseKB(e);
 	}
 	
 	while(!wnd.mouse.IsEmpty())
 	{
         Mouse::Event ev = wnd.mouse.Read();
+		if(!wnd.mouse.IsInWindow() || (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
+			continue;
 		
 		if(gameState != GameSt::Running)
 		{
@@ -77,8 +79,7 @@ void Game::UpdateModel()
 			
 			return;
 		}
-		else if ( ev.GetType() == Mouse::Event::Type::LRelease
-		     ||   ev.GetType() == Mouse::Event::Type::RRelease )
+		else
 		{
             Vei2 offset = calcOffsetForField();
             field.parseMouse(ev, offset);

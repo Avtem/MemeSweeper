@@ -78,14 +78,12 @@ void AI::traitor()
 
     for(int i=0; i < field.getTilesCount(); ++i)
     {
-        Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];   // our main tile (that we "click")
-
-        if(!t.isRevealed() || areaIsSolved(ind))
+        if(!t.isRevealed() || areaIsSolved(t.index))
             continue;
 
         // find potencial unsolved adjacent tiles
-        auto adjTiles = getAdjTiles(ind);
+        auto adjTiles = getAdjTiles(t.index);
         for(const Tile* adj : adjTiles)
         {
             if(!adj->isRevealed() || areaIsSolved(adj->index))
@@ -245,7 +243,7 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
     return count;
 }
 
-void AI::parseKB(const Keyboard::Event& event, Mouse& mose)
+void AI::parseKB(const Keyboard::Event& event)
 {
 	switch (event.GetCode())
 	{

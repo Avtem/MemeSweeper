@@ -3,9 +3,6 @@
 #include <random>
 #include <av.h>
 
-#define lmbUp Mouse::Event::Type::LRelease
-#define rmbUp Mouse::Event::Type::RRelease
-
 std::random_device Field::randDevice;
 std::mt19937 Field::mt(Field::randDevice());
 std::uniform_int_distribution<int> Field::intDistr(0, 999999);

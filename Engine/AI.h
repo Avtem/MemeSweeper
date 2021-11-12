@@ -9,10 +9,10 @@
 class AI
 {
 public:
-    friend class Field;    // avDebug only
+    friend class Field;
 
     AI(class Field& inField);
-    void parseKB(const Keyboard::Event& event, Mouse& mose);     // avDebug: mose for debug only
+    void parseKB(const Keyboard::Event& event);
 
     // returns true if flagged count == number
     bool areaIsSolved(const Vei2& centerTile);

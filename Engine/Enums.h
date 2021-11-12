@@ -1,5 +1,8 @@
 #pragma once
 
+#define lmbUp Mouse::Event::Type::LRelease
+#define rmbUp Mouse::Event::Type::RRelease
+
 enum class GameSt
 {
 	Running,
