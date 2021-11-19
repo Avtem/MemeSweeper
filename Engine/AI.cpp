@@ -6,7 +6,7 @@ AI::AI(Field& inField)
 {
 }
 
-bool AI::areaIsSolved(const Vei2& centerTile)
+bool AI::areaIsSolved(const Vei2& centerTile) const
 {
     Tile& t = tileAt(centerTile);
     if(!t.isRevealed())
@@ -141,6 +141,43 @@ void AI::iKnowWhereTheOthers()
     }
 }
 
+void AI::countMatters()
+{
+    int memesLeft = field.getRemainingMemeCount();
+    // we have 0 memes, yaY!
+    if(memesLeft == 0)
+    {
+        for(int i = 0; i < field.getTilesCount(); ++i)
+            if(!field.tiles[i].isRevealed() 
+            && field.tiles[i].getDrawSt() != DrawSt::Flag)
+                field.clickTile(field.tiles[i].index, lmbUp);
+        return;
+    }
+
+    std::vector <Tile*> overlap;
+    for(int i=0, knownCount = 0; i < 100; ++i)
+    {
+        const Tile* t = findUnsolvedArea(overlap);
+        if (!t)
+            return;
+
+        std::vector <Tile*> newOverlap = getHiddenTiles(t->index, false);
+        overlap.insert(overlap.begin(), newOverlap.begin(), newOverlap.end());
+
+        knownCount += requiredCountToSolve(*t);
+        if(knownCount == memesLeft) // yay, we did it!
+        {
+            std::vector <Tile*> safeTiles = getAllHiddenTiles(false);
+            excludeTiles(safeTiles, overlap);
+
+            for(const Tile* tile : safeTiles)
+                field.clickTile(tile->index, lmbUp);
+            
+            return;
+        }
+    }
+}
+
 void AI::useEverything()
 {
     for(int i=0; i < 15; ++i)
@@ -149,6 +186,31 @@ void AI::useEverything()
         traitor();
         iKnowWhereTheOthers();
     }
+}
+
+const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
+{
+    // find unsolved area
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        const Tile& t = field.tiles[i];
+        if (t.isRevealed() && !areaIsSolved(t.index) && !areaContainsTiles(t, tilesToExclude))
+            return &t;
+    }
+
+    return nullptr;
+}
+
+bool AI::areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const
+{
+    std::vector<Tile*> adjT = getAdjTiles(t.index);
+    
+    for(const Tile* aTile : adjT)
+        for(const Tile* tile : tiles)
+            if(aTile->index == tile->index)
+                return true;
+
+    return false;
 }
 
 Tile& AI::tileAt(const Vei2& indexPos) const
@@ -191,7 +253,7 @@ std::vector<Tile*> AI::getNonOverlapTiles(const Tile* t, const Tile* adjT) const
 }
 
 void AI::excludeTiles(std::vector<Tile*>& mainVec,
-                                     std::vector<Tile*>& tilesToExclude) const
+                                    const std::vector<Tile*>& tilesToExclude) const
 {
     for(int i=mainVec.size() -1; i >= 0; --i)
     {
@@ -252,6 +314,7 @@ void AI::parseKB(const Keyboard::Event& event)
 		case '3':   afterFlag();             break;
         case '4':   traitor();               break;
         case '5':   iKnowWhereTheOthers();   break;
+        case '6':   countMatters();          break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
 	}
@@ -294,5 +357,16 @@ std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile, bool includeFlagge
     }
 
     return hidTiles;
+}
+
+std::vector<Tile*> AI::getAllHiddenTiles(bool includeFlagged) const
+{
+    std::vector <Tile*> vec;
+    for(int i=0; i < field.getTilesCount(); ++i)
+        if(!field.tiles[i].isRevealed()
+        && (!includeFlagged ? field.tiles[i].getDrawSt() != DrawSt::Flag : true ) )
+            vec.push_back(&field.tiles[i]);
+            
+    return vec;
 }
 

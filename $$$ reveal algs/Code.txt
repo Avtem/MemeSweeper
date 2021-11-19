@@ -18,7 +18,7 @@
 - find two adjacent non-solved areas
 - putting 1 flag in overlap "solves" t
 
-#Remained Count Matters
+#Count Matters
 - if MEM == 0, just reveal all unflagged
-- find MEM of areas(lacking 1??) that don't overlap (ingore revealed and flagged)
+- count NUM of areas(lacking 1??) that don't overlap (ignore revealed and flagged)
 - reveal !areas
