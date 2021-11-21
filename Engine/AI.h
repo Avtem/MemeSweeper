@@ -11,15 +11,16 @@ class AI
 public:
     friend class Field;
 
-    AI(class Field& inField);
+    AI(class Game& game, class Field& inField);
     void parseKB(const Keyboard::Event& event);
 
     // returns true if flagged count == number
     bool areaIsSolved(const Vei2& centerTile) const;
 private:
     class Field& field;
+    class Game& game;
 
-    std::vector<Tile*> getAdjTiles(const Vei2& centerTile) const;
+    std::vector<Tile*> getAdjTiles(const Vei2& centerTile, int outerRingCount = 1) const;
     std::vector<Tile*> getHiddenTiles(const Vei2& centerTile, bool includeFlagged) const;
     std::vector<Tile*> getAllHiddenTiles(bool includeFlagged) const;
     std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;
@@ -41,6 +42,8 @@ private:
     void iKnowWhereTheOthers();
     void countMatters();
     void useEverything();
+    // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
+    void regenerateUntilUnsolved(); 
     Tile& tileAt(const Vei2& indexPos) const;
 };
 

@@ -1,8 +1,12 @@
 #include "AI.h"
 #include "Field.h"
+#include "Game.h"
+#include <av.h>
 
-AI::AI(Field& inField)
-	:field(inField)
+
+AI::AI(class Game& game, Field& inField)
+	:field(inField),
+    game(game)
 {
 }
 
@@ -82,8 +86,8 @@ void AI::traitor()
         if(!t.isRevealed() || areaIsSolved(t.index))
             continue;
 
-        // find potencial unsolved adjacent tiles
-        auto adjTiles = getAdjTiles(t.index);
+        // find potencial unsolved adjacent tiles (2 for remote traitor)
+        auto adjTiles = getAdjTiles(t.index, 2);
         for(const Tile* adj : adjTiles)
         {
             if(!adj->isRevealed() || areaIsSolved(adj->index))
@@ -185,6 +189,7 @@ void AI::useEverything()
         flagObvious();
         traitor();
         iKnowWhereTheOthers();
+        countMatters();
     }
 }
 
@@ -236,6 +241,22 @@ bool AI::areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const
                 return true;
 
     return false;
+}
+
+void AI::regenerateUntilUnsolved()
+{
+    int wonCount = 0;
+    while(true)
+    {
+        game.restartGame();
+        randClick(); 
+        useEverything();
+        if(*Tile::gameState == GameSt::Running)
+            break;
+
+        ++wonCount;
+    } 
+    avPrint << L"AI won game: " << wonCount << " times.\n";
 }
 
 Tile& AI::tileAt(const Vei2& indexPos) const
@@ -342,21 +363,23 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();          break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
+        case 'U':   regenerateUntilUnsolved(); break;
 	}
 }
 
-std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile) const
+std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) const
 {
     std::vector<Tile*> vec;
     vec.reserve(8);
 
-    Vei2 adjInd{ centerTile.x -1, centerTile.y -1 };
-    for (int i = 0; i < 9; ++i, ++adjInd.x)
+    Vei2 adjInd{ centerTile.x -outerRingCount, centerTile.y -outerRingCount };
+    int width = 1+ outerRingCount*2;
+    for (int i = 0; i < width*width; ++i, ++adjInd.x)
     {
-        if (i && i %3 == 0)
+        if (i > 0 && i %width == 0)
         {
             ++adjInd.y;
-            adjInd.x = centerTile.x-1;
+            adjInd.x = centerTile.x -outerRingCount;
         }
 
         if (field.tileIsValid(adjInd) && centerTile != adjInd)
