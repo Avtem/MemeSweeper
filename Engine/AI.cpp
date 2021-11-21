@@ -1,8 +1,12 @@
 #include "AI.h"
 #include "Field.h"
+#include "Game.h"
+#include <av.h>
 
-AI::AI(Field& inField)
-	:field(inField)
+
+AI::AI(class Game& game, Field& inField)
+	:field(inField),
+    game(game)
 {
 }
 
@@ -185,6 +189,7 @@ void AI::useEverything()
         flagObvious();
         traitor();
         iKnowWhereTheOthers();
+        countMatters();
     }
 }
 
@@ -236,6 +241,22 @@ bool AI::areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const
                 return true;
 
     return false;
+}
+
+void AI::regenerateUntilUnsolved()
+{
+    int wonCount = 0;
+    while(true)
+    {
+        game.restartGame();
+        randClick(); 
+        useEverything();
+        if(*Tile::gameState == GameSt::Running)
+            break;
+
+        ++wonCount;
+    } 
+    avPrint << L"AI won game: " << wonCount << " times.\n";
 }
 
 Tile& AI::tileAt(const Vei2& indexPos) const
@@ -342,6 +363,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();          break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
+        case 'U':   regenerateUntilUnsolved(); break;
 	}
 }
 

@@ -77,9 +77,6 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
      
     clickTile(tileInd, event.GetType());
-    
-    AI ai(*this);
-    //ai.traitor(tileInd);
 }
 
 void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)

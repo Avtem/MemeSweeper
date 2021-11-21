@@ -29,7 +29,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	field(gfx, 16, 16, 0.15625f),
-	ai(field),	// !depends on field
+	ai(*this, field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav")
 {
@@ -62,8 +62,7 @@ void Game::UpdateModel()
 				break;
 		}
 
-		if(gameState == GameSt::Running)
-			ai.parseKB(e);
+		ai.parseKB(e);
 	}
 	
 	while(!wnd.mouse.IsEmpty())

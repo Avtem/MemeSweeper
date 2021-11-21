@@ -35,10 +35,10 @@ public:
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
 	void Go();
+	void restartGame();
 private:
 	void ComposeFrame();
 	void UpdateModel();
-	void restartGame();
 	/********************************/
 	/*  User Functions              */
 	Vei2 calcOffsetForField() const;
