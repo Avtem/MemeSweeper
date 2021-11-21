@@ -29,6 +29,7 @@ private:
     bool solvableWithoutTiles(const Tile* t, std::vector<Tile*>& tilesToExclude) const;
     bool impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const;
     const Tile* findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const;
+    const Tile* findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToExclude) const;
     bool areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const;
     bool areaIsSolvable(const Tile& t) const;
     int requiredCountToSolve (const Tile& t) const;

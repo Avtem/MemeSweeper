@@ -157,7 +157,7 @@ void AI::countMatters()
     std::vector <Tile*> overlap;
     for(int i=0, knownCount = 0; i < 100; ++i)
     {
-        const Tile* t = findUnsolvedArea(overlap);
+        const Tile* t = findUnsolvedAreaWithMaxMemes(overlap);
         if (!t)
             return;
 
@@ -199,6 +199,31 @@ const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
     }
 
     return nullptr;
+}
+
+
+bool compareTwo(std::pair<int,int>& i1, std::pair<int,int>& i2)
+{
+    return i1.second > i2.second;
+}
+const Tile* AI::findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToExclude) const
+{
+    std::vector<std::pair<int,int>> unsolvedInd;
+    
+    // find unsolved areas
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        const Tile& t = field.tiles[i];
+        if(t.isRevealed() 
+        && !areaIsSolved(t.index)
+        && !areaContainsTiles(t, tilesToExclude))
+            unsolvedInd.push_back({i, requiredCountToSolve(t)});
+    }
+
+    std::sort(unsolvedInd.begin(), unsolvedInd.end(), compareTwo);
+
+    return unsolvedInd.size() ? &field.tiles[unsolvedInd.front().first]
+                              : nullptr;
 }
 
 bool AI::areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const
