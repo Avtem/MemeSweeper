@@ -251,6 +251,12 @@ void AI::regenerateUntilUnsolved()
         game.restartGame();
         randClick(); 
         useEverything();
+        if(getAllHiddenTiles(false).size() == 2)
+        {
+            ++wonCount;
+            avPrint << L"AI detected an unsolvable game! Guh!\n";
+            continue;
+        }
         if(*Tile::gameState == GameSt::Running)
             break;
 
