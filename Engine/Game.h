@@ -35,7 +35,7 @@ public:
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
 	void Go();
-	void restartGame();
+	void restartGame(bool randomize = true);
 private:
 	void ComposeFrame();
 	void UpdateModel();

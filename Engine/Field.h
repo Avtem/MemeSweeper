@@ -15,7 +15,7 @@ public:
     void parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType);
     void clickTile(Vei2 index, Mouse::Event::Type eventType);
     void checkWinCondition() const;
-    void reset(bool resetFlags = true);
+    void reset(bool resetFlags = true, bool randomize = true);
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;
     int getRand() const;

@@ -55,7 +55,7 @@ void Game::UpdateModel()
 
 		switch (e.GetCode())
 		{
-			case 'R':			restartGame();		    break;
+			case 'R':			restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); break;
 			case VK_ESCAPE:		PostQuitMessage(0);		break;
 			case VK_SPACE: 
 				avPrint << "Memes left: " << field.getRemainingMemeCount() << av::endl;		    
@@ -109,11 +109,11 @@ void Game::UpdateModel()
 	}
 }
 
-void Game::restartGame()
+void Game::restartGame(bool randomize)
 {
 	gameState = GameSt::Running;
 	playedSnd = false;
-	field.reset();
+	field.reset(true, randomize);
 	sndWin.StopAll();
 	sndLose.StopAll();
 }

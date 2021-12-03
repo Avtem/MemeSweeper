@@ -238,11 +238,19 @@ Tile& Field::tileAt(const Vei2& index) const
     return tiles[index.x +index.y *tilesInW];
 }
 
-void Field::reset(bool resetFlags)
+void Field::reset(bool resetFlags, bool randomize)
 {
+    if(!randomize)
+    {
+        for (int i = 0; i < getTilesCount(); ++i)
+            tiles[i].softReset();
+
+        return;
+    }
+
     firstClick = true;
 
-    for(int i=0; i < getTilesCount(); ++i)
+    for (int i = 0; i < getTilesCount(); ++i)
     {
         tiles[i].reset(resetFlags);
         tiles[i].index = { i %tilesInW, i /tilesInW };

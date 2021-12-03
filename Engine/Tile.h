@@ -13,6 +13,7 @@ public:
     void parseMouse(Mouse::Event::Type mouseEv); // returns TRUE if you hit a meme
     void revealForLoser();
     void reset(bool resetFlag = true);
+    void softReset();
     void setObj(ObjT type);
     void setNumber(int memeCount);
     void reveal();

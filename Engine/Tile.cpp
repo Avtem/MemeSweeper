@@ -38,6 +38,14 @@ void Tile::reset(bool resetFlag)
         drawState = DrawSt::Normal;
 }
 
+void Tile::softReset()
+{
+    revealed = false;
+    obj = ObjT::Number;
+
+    drawState = DrawSt::Normal;
+}
+
 ObjT Tile::getObj() const
 {
     return obj;
