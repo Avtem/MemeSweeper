@@ -105,10 +105,6 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
             break;
     }
 
-    WCHAR buff[5] = {0};
-    swprintf_s(buff, L"% 3i", spawnAttempts);
-    avPrint << L"We reset the field " << buff << " times, so that you can"
-        << " enjoy clicking on a tile with 0 memes around it." << av::endl;
     firstClick = false;
 }
 

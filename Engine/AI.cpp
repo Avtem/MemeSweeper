@@ -86,8 +86,8 @@ void AI::traitor()
         if(!t.isRevealed() || areaIsSolved(t.index))
             continue;
 
-        // find potencial unsolved adjacent tiles
-        auto adjTiles = getAdjTiles(t.index);
+        // find potencial unsolved adjacent tiles (2 for remote traitor)
+        auto adjTiles = getAdjTiles(t.index, 2);
         for(const Tile* adj : adjTiles)
         {
             if(!adj->isRevealed() || areaIsSolved(adj->index))
@@ -251,6 +251,12 @@ void AI::regenerateUntilUnsolved()
         game.restartGame();
         randClick(); 
         useEverything();
+        if(getAllHiddenTiles(false).size() == 2)
+        {
+            ++wonCount;
+            avPrint << L"AI detected an unsolvable game! Guh!\n";
+            continue;
+        }
         if(*Tile::gameState == GameSt::Running)
             break;
 
@@ -367,18 +373,19 @@ void AI::parseKB(const Keyboard::Event& event)
 	}
 }
 
-std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile) const
+std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) const
 {
     std::vector<Tile*> vec;
     vec.reserve(8);
 
-    Vei2 adjInd{ centerTile.x -1, centerTile.y -1 };
-    for (int i = 0; i < 9; ++i, ++adjInd.x)
+    Vei2 adjInd{ centerTile.x -outerRingCount, centerTile.y -outerRingCount };
+    int width = 1+ outerRingCount*2;
+    for (int i = 0; i < width*width; ++i, ++adjInd.x)
     {
-        if (i && i %3 == 0)
+        if (i > 0 && i %width == 0)
         {
             ++adjInd.y;
-            adjInd.x = centerTile.x-1;
+            adjInd.x = centerTile.x -outerRingCount;
         }
 
         if (field.tileIsValid(adjInd) && centerTile != adjInd)
