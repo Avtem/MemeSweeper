@@ -22,7 +22,9 @@
 #include "Game.h"
 #include "resource.h"
 #include <windows.h>
+#ifdef _DEBUG
 #include <av.h>
+#endif // _DEBUG
 
 Game::Game( MainWindow& wnd )
 	:
@@ -58,7 +60,9 @@ void Game::UpdateModel()
 			case 'R':			restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); break;
 			case VK_ESCAPE:		PostQuitMessage(0);		break;
 			case VK_SPACE: 
+#ifdef _DEBUG
 				avPrint << "Memes left: " << field.getRemainingMemeCount() << av::endl;		    
+#endif // _DEBUG
 				break;
 		}
 

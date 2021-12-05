@@ -1,7 +1,10 @@
 #include "AI.h"
 #include "Field.h"
 #include "Game.h"
+#ifdef _DEBUG
 #include <av.h>
+#endif // _DEBUG
+
 
 
 AI::AI(class Game& game, Field& inField)
@@ -120,8 +123,8 @@ void AI::iKnowWhereTheOthers()
         if (!t.isRevealed() || areaIsSolved(ind))
             continue;
 
-        // find unsolved adjacent area
-        auto adjTiles = getAdjTiles(ind);
+        // find unsolved adjacent area. 2 rings for remote iKnowWhereTheOthers
+        auto adjTiles = getAdjTiles(ind, 2);
         for (const Tile* adj : adjTiles)
         {
             if (!adj->isRevealed() || areaIsSolved(adj->index))
@@ -132,8 +135,6 @@ void AI::iKnowWhereTheOthers()
             auto adjHid = getHiddenTiles(adj->index, false);
             excludeTiles(adjHid, overlap);
             
-            // t is solvable (with only overlap) && adj is 4-1 == 3
-            //overlap.size() == tHid.size() &&
             if(areaIsSolvable(t)
             && adjHid.size()
             && requiredCountToSolve(*adj) -requiredCountToSolve(t) == adjHid.size())
@@ -254,15 +255,22 @@ void AI::regenerateUntilUnsolved()
         if(getAllHiddenTiles(false).size() == 2)
         {
             ++wonCount;
+#ifdef _DEBUG
             avPrint << L"AI detected an unsolvable game! Guh!\n";
+#endif // _DEBUG
+
             continue;
         }
+
         if(*Tile::gameState == GameSt::Running)
             break;
 
         ++wonCount;
     } 
+
+#ifdef _DEBUG
     avPrint << L"AI won game: " << wonCount << " times.\n";
+#endif // _DEBUG
 }
 
 Tile& AI::tileAt(const Vei2& indexPos) const
@@ -366,6 +374,7 @@ void AI::parseKB(const Keyboard::Event& event)
 		case '3':   afterFlag();             break;
         case '4':   traitor();               break;
         case '5':   iKnowWhereTheOthers();   break;
+        case '7':   iKnowWhereTheOthers();   break;
         case '6':   countMatters();          break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
