@@ -374,7 +374,6 @@ void AI::parseKB(const Keyboard::Event& event)
 		case '3':   afterFlag();             break;
         case '4':   traitor();               break;
         case '5':   iKnowWhereTheOthers();   break;
-        case '7':   iKnowWhereTheOthers();   break;
         case '6':   countMatters();          break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving

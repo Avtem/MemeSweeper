@@ -60,10 +60,11 @@ void Game::UpdateModel()
 			case 'R':			restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); break;
 			case VK_ESCAPE:		PostQuitMessage(0);		break;
 			case VK_SPACE: 
-#ifdef _DEBUG
-				avPrint << "Memes left: " << field.getRemainingMemeCount() << av::endl;		    
-#endif // _DEBUG
-				break;
+			{
+				MessageBox(wnd.getHwnd(), std::to_wstring(field.getRemainingMemeCount()).c_str(),
+						   L"Memes left:", 0);
+			}
+			break;
 		}
 
 		ai.parseKB(e);
