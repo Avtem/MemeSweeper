@@ -113,6 +113,41 @@ void AI::traitor()
     }
 }
 
+void AI::cantBeHere()
+{
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        Tile& t = field.tiles[i];   // our main tile (that we "click")
+        if (!t.isRevealed() || areaIsSolved(t.index))
+            continue;
+
+        auto tNeighbours = getAdjTiles(t.index, 1);
+        auto tHidTiles = getHiddenTiles(t.index, false);
+        int tReqToSolve = requiredCountToSolve(t);
+
+        for (const Tile* tNeigh : tNeighbours)
+        {
+            if (!tNeigh->isRevealed() || requiredCountToSolve(*tNeigh) != 1)
+                continue;
+
+            // if t overlaps adj.cell, reveal all unrevealed tiles for t
+            auto adjHidTiles = getHiddenTiles(tNeigh->index, false);
+            auto overlap = adjHidTiles;
+            excludeTiles(adjHidTiles, tHidTiles);
+            if(adjHidTiles.size() == 0)
+            {
+                excludeTiles(tHidTiles, overlap);
+                --tReqToSolve;
+                if(tReqToSolve == 0)
+                {
+                    for (auto& tHid: tHidTiles)
+                        field.clickTile(tHid->index, Mouse::Event::Type::LRelease);
+                }
+            }
+        }
+    }
+}
+
 void AI::iKnowWhereTheOthers()
 {
     for (int i = 0; i < field.getTilesCount(); ++i)
@@ -281,7 +316,6 @@ Tile& AI::tileAt(const Vei2& indexPos) const
 std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const
 {
     std::vector<Tile*> overlap;
-    overlap.reserve(4); // 2 areas can have 4 tiles overlapping max
 
     auto area1 = getHiddenTiles(cenInd1, false);
     auto area2 = getHiddenTiles(cenInd2, false);
@@ -315,7 +349,7 @@ std::vector<Tile*> AI::getNonOverlapTiles(const Tile* t, const Tile* adjT) const
 void AI::excludeTiles(std::vector<Tile*>& mainVec,
                                     const std::vector<Tile*>& tilesToExclude) const
 {
-    for(int i=mainVec.size() -1; i >= 0; --i)
+    for(int i=(int)mainVec.size() -1; i >= 0; --i)
     {
         for(const Tile* texc : tilesToExclude)
             if(mainVec.at(i)->index == texc->index)
@@ -375,6 +409,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '4':   traitor();               break;
         case '5':   iKnowWhereTheOthers();   break;
         case '6':   countMatters();          break;
+        case '7':   cantBeHere();            break;
         case 'Q':   useEverything();         break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
         case 'U':   regenerateUntilUnsolved(); break;
@@ -384,7 +419,6 @@ void AI::parseKB(const Keyboard::Event& event)
 std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) const
 {
     std::vector<Tile*> vec;
-    vec.reserve(8);
 
     Vei2 adjInd{ centerTile.x -outerRingCount, centerTile.y -outerRingCount };
     int width = 1+ outerRingCount*2;
@@ -408,7 +442,6 @@ std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile, bool includeFlagge
     std::vector<Tile*> adjTiles = getAdjTiles(centerTile);
 
     std::vector<Tile*> hidTiles;
-    hidTiles.reserve(8);
 
     for (Tile* t : adjTiles)
     {
