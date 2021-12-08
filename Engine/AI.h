@@ -39,6 +39,7 @@ private:
     void flagObvious();
     void afterFlag();
     void traitor();
+    void cantBeHere();
     void iKnowWhereTheOthers();
     void countMatters();
     void useEverything();
