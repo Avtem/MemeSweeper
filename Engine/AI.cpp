@@ -60,7 +60,7 @@ void AI::afterFlag()
             // check if the area is complete
             int flaggedCount = 0;
             for(const Tile* adjT : hidTiles)
-                if(adjT->getDrawSt() == DrawSt::Flag)
+                if(adjT->isFlagged())
                    ++flaggedCount;
 
             // yay, we can reveal other tiles!
@@ -68,7 +68,7 @@ void AI::afterFlag()
             {
                 for(Tile* adjT : hidTiles)
                 {
-                    if(!adjT->isRevealed() && adjT->getDrawSt() != DrawSt::Flag)
+                    if(!adjT->isRevealed() && !adjT->isFlagged())
                     {
                         field.clickTile(adjT->index, Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
@@ -189,7 +189,7 @@ void AI::countMatters()
     {
         for(int i = 0; i < field.getTilesCount(); ++i)
             if(!field.tiles[i].isRevealed() 
-            && field.tiles[i].getDrawSt() != DrawSt::Flag)
+            && !field.tiles[i].isFlagged())
                 field.clickTile(field.tiles[i].index, lmbUp);
         return;
     }
@@ -394,7 +394,7 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
     auto adjT = getAdjTiles(centerTile);
     int count = 0;
     for(const Tile* t : adjT)
-        if(t->getDrawSt() == DrawSt::Flag)
+        if(t->isFlagged())
             ++count;
 
     return count;
@@ -448,7 +448,7 @@ std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile, bool includeFlagge
     for (Tile* t : adjTiles)
     {
         bool include = includeFlagged ? true
-                                      : !(t->getDrawSt() == DrawSt::Flag);
+                                      : !t->isFlagged();
         if (!t->isRevealed() && include)
             hidTiles.push_back(t);
     }
@@ -461,7 +461,7 @@ std::vector<Tile*> AI::getAllHiddenTiles(bool includeFlagged) const
     std::vector <Tile*> vec;
     for(int i=0; i < field.getTilesCount(); ++i)
         if(!field.tiles[i].isRevealed()
-        && (!includeFlagged ? field.tiles[i].getDrawSt() != DrawSt::Flag : true ) )
+        && (!includeFlagged ? !field.tiles[i].isFlagged() : true ) )
             vec.push_back(&field.tiles[i]);
             
     return vec;
