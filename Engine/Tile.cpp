@@ -87,6 +87,11 @@ void Tile::setFlag(bool flagged)
     drawState = flagged ? DrawSt::Flag : DrawSt::Normal;
 }
 
+void Tile::setBlue()
+{
+    drawState = DrawSt::FatalMeme;
+}
+
 void Tile::reveal()
 {
     switch (obj)
