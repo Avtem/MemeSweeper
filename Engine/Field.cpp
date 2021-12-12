@@ -170,9 +170,7 @@ void Field::revealAdjTiles(const Vei2& pos)
             continue;
 
         Tile& tile = tileAt(ind);
-        if (tile.getObj() == ObjT::Number 
-        && !tile.isRevealed()
-        && !tile.isFlagged())
+        if (tile.getObj() == ObjT::Number && tile.isHidden())
         {
             tile.reveal();
             revealAdjTiles(ind);    // recurse!

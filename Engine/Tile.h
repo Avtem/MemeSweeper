@@ -19,6 +19,7 @@ public:
     void reveal();
     bool isRevealed() const;
     bool isFlagged() const;
+    bool isHidden() const; // a tile that was not revealed and is not flagged
     void setFlag(bool flagged);
     DrawSt Tile::getDrawSt() const;
     ObjT Tile::getObj() const;

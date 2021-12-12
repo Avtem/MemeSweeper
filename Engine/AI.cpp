@@ -68,7 +68,7 @@ void AI::afterFlag()
             {
                 for(Tile* adjT : hidTiles)
                 {
-                    if(!adjT->isRevealed() && !adjT->isFlagged())
+                    if(adjT->isHidden())
                     {
                         field.clickTile(adjT->index, Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
@@ -188,8 +188,7 @@ void AI::countMatters()
     if(memesLeft == 0)
     {
         for(int i = 0; i < field.getTilesCount(); ++i)
-            if(!field.tiles[i].isRevealed() 
-            && !field.tiles[i].isFlagged())
+            if(field.tiles[i].isHidden())
                 field.clickTile(field.tiles[i].index, lmbUp);
         return;
     }
