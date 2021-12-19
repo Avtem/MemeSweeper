@@ -1,3 +1,7 @@
+#IsUnsolvable
+- 't' needs 1 mine to be solved
+- its hidden area is NOT surrounded with hidden tile OR useful number (non-solved + non-overlap tiles)
+
 #Rand click
 - just clicks in a random tile
 

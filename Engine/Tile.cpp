@@ -72,9 +72,24 @@ bool Tile::isRevealed() const
     return revealed;
 }
 
+bool Tile::isFlagged() const
+{
+    return drawState == DrawSt::Flag;
+}
+
+bool Tile::isHidden() const
+{
+    return revealed == false && isFlagged() == false;
+}
+
 void Tile::setFlag(bool flagged)
 {
     drawState = flagged ? DrawSt::Flag : DrawSt::Normal;
+}
+
+void Tile::setBlue()
+{
+    drawState = DrawSt::FatalMeme;
 }
 
 void Tile::reveal()

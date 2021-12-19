@@ -153,7 +153,7 @@ void Field::revealEverything()
 void Field::revealAdjTiles(const Vei2& pos)
 {
     // terminate condition for the recursion
-    if(0 != tileAt(pos).numOfAdjMemes || tileAt(pos).getDrawSt() == DrawSt::Flag)
+    if(0 != tileAt(pos).numOfAdjMemes || tileAt(pos).isFlagged())
         return;
 
     // reveal all 9 tiles around POS
@@ -170,9 +170,7 @@ void Field::revealAdjTiles(const Vei2& pos)
             continue;
 
         Tile& tile = tileAt(ind);
-        if (tile.getObj() == ObjT::Number 
-        && !tile.isRevealed()
-        && tile.getDrawSt() != DrawSt::Flag)
+        if (tile.getObj() == ObjT::Number && tile.isHidden())
         {
             tile.reveal();
             revealAdjTiles(ind);    // recurse!
@@ -283,7 +281,7 @@ int Field::getRemainingMemeCount() const
 {
     int flaggedCount = 0;
     for (int i = 0; i < getTilesCount(); ++i)
-        flaggedCount += tiles[i].getDrawSt() == DrawSt::Flag ? 1 : 0;
+        flaggedCount += tiles[i].isFlagged() ? 1 : 0;
 
     return getMemeCount() -flaggedCount;
 }

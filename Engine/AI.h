@@ -31,8 +31,9 @@ private:
     bool impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const;
     const Tile* findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const;
     const Tile* findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToExclude) const;
-    bool areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const;
+    bool areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const;
     bool areaIsSolvable(const Tile& t) const;
+    bool isUnsolvable(const Tile& t) const;
     int requiredCountToSolve (const Tile& t) const;
     int getAdjFlagCount(const Vei2& centerTile) const;
     void randClick() const;
@@ -43,6 +44,7 @@ private:
     void iKnowWhereTheOthers();
     void countMatters();
     void useEverything();
+    bool isGameUnsolvable() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilUnsolved(); 
     Tile& tileAt(const Vei2& indexPos) const;

@@ -60,7 +60,7 @@ void AI::afterFlag()
             // check if the area is complete
             int flaggedCount = 0;
             for(const Tile* adjT : hidTiles)
-                if(adjT->getDrawSt() == DrawSt::Flag)
+                if(adjT->isFlagged())
                    ++flaggedCount;
 
             // yay, we can reveal other tiles!
@@ -68,7 +68,7 @@ void AI::afterFlag()
             {
                 for(Tile* adjT : hidTiles)
                 {
-                    if(!adjT->isRevealed() && adjT->getDrawSt() != DrawSt::Flag)
+                    if(adjT->isHidden())
                     {
                         field.clickTile(adjT->index, Mouse::Event::Type::LRelease);
                         field.checkWinCondition();
@@ -188,8 +188,7 @@ void AI::countMatters()
     if(memesLeft == 0)
     {
         for(int i = 0; i < field.getTilesCount(); ++i)
-            if(!field.tiles[i].isRevealed() 
-            && field.tiles[i].getDrawSt() != DrawSt::Flag)
+            if(field.tiles[i].isHidden())
                 field.clickTile(field.tiles[i].index, lmbUp);
         return;
     }
@@ -223,10 +222,26 @@ void AI::useEverything()
     for(int i=0; i < 15; ++i)
     {
         flagObvious();
+        cantBeHere();
         traitor();
         iKnowWhereTheOthers();
         countMatters();
     }
+}
+
+bool AI::isGameUnsolvable() const
+{
+    for (int i = 0; i < field.getTilesCount(); ++i)
+    {
+        Tile& t = field.tiles[i];
+        if(t.isRevealed() && isUnsolvable(t))
+        {
+            t.setBlue();
+            return true;
+        }
+    }
+
+    return false;
 }
 
 const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
@@ -235,7 +250,7 @@ const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
     for (int i = 0; i < field.getTilesCount(); ++i)
     {
         const Tile& t = field.tiles[i];
-        if (t.isRevealed() && !areaIsSolved(t.index) && !areaContainsTiles(t, tilesToExclude))
+        if (t.isRevealed() && !areaIsSolved(t.index) && !areaContainsTile(t, tilesToExclude))
             return &t;
     }
 
@@ -257,7 +272,7 @@ const Tile* AI::findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToEx
         const Tile& t = field.tiles[i];
         if(t.isRevealed() 
         && !areaIsSolved(t.index)
-        && !areaContainsTiles(t, tilesToExclude))
+        && !areaContainsTile(t, tilesToExclude))
             unsolvedInd.push_back({i, requiredCountToSolve(t)});
     }
 
@@ -267,7 +282,7 @@ const Tile* AI::findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToEx
                               : nullptr;
 }
 
-bool AI::areaContainsTiles(const Tile& t, const std::vector<Tile*> tiles) const
+bool AI::areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const
 {
     std::vector<Tile*> adjT = getAdjTiles(t.index);
     
@@ -287,13 +302,13 @@ void AI::regenerateUntilUnsolved()
         game.restartGame();
         randClick(); 
         useEverything();
-        if(getAllHiddenTiles(false).size() == 2)
+        if(isGameUnsolvable())
         {
-            ++wonCount;
 #ifdef _DEBUG
             avPrint << L"AI detected an unsolvable game! Guh!\n";
 #endif // _DEBUG
-
+            
+            ++wonCount;
             continue;
         }
 
@@ -383,6 +398,34 @@ bool AI::areaIsSolvable(const Tile& t) const
     return int(hidTiles.size()) >= requiredCountToSolve(t);
 }
 
+bool AI::isUnsolvable(const Tile& t) const
+{
+    if(requiredCountToSolve(t) != 1)
+        return false; // it's solvable
+
+    auto overlap = getHiddenTiles(t.index, false);
+    for(const Tile* hidT : overlap)
+    {
+        auto hidHidTiles = getHiddenTiles(hidT->index, false);
+        for (const Tile* hidHidT : hidHidTiles)
+        {
+            if(hidHidT->isHidden() && !areaContainsTile(*hidHidT, overlap))
+                return false; // a hidden tile? Can be solved
+        }
+
+        auto hidAdj = getAdjTiles(hidT->index);
+        for (const Tile* hidNum : hidAdj)
+        {
+            auto hidNumAdj = getHiddenTiles(hidNum->index, false);
+            excludeTiles(hidNumAdj, overlap);
+            if(!areaIsSolved(hidNum->index) && hidNumAdj.size() > 0)
+                return false; // it is surrounded with a useful number!
+        }
+    }
+
+    return true; // yyaaay, it's unsolvable!
+}
+
 int AI::requiredCountToSolve(const Tile& t) const
 {
     return t.numOfAdjMemes - getAdjFlagCount(t.index);
@@ -393,7 +436,7 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
     auto adjT = getAdjTiles(centerTile);
     int count = 0;
     for(const Tile* t : adjT)
-        if(t->getDrawSt() == DrawSt::Flag)
+        if(t->isFlagged())
             ++count;
 
     return count;
@@ -411,6 +454,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();          break;
         case '7':   cantBeHere();            break;
         case 'Q':   useEverything();         break;
+        case 'Z':   isGameUnsolvable();      break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
         case 'U':   regenerateUntilUnsolved(); break;
 	}
@@ -446,7 +490,7 @@ std::vector<Tile*> AI::getHiddenTiles(const Vei2& centerTile, bool includeFlagge
     for (Tile* t : adjTiles)
     {
         bool include = includeFlagged ? true
-                                      : !(t->getDrawSt() == DrawSt::Flag);
+                                      : !t->isFlagged();
         if (!t->isRevealed() && include)
             hidTiles.push_back(t);
     }
@@ -459,7 +503,7 @@ std::vector<Tile*> AI::getAllHiddenTiles(bool includeFlagged) const
     std::vector <Tile*> vec;
     for(int i=0; i < field.getTilesCount(); ++i)
         if(!field.tiles[i].isRevealed()
-        && (!includeFlagged ? field.tiles[i].getDrawSt() != DrawSt::Flag : true ) )
+        && (!includeFlagged ? !field.tiles[i].isFlagged() : true ) )
             vec.push_back(&field.tiles[i]);
             
     return vec;
