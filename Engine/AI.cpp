@@ -261,6 +261,27 @@ void AI::useEverything()
     }
 }
 
+void AI::showHelp()
+{
+    MessageBox(0, 
+        L"1 = Random click"
+        L"\n2 = Flag Obvious"
+        L"\n3 = Afterflag"
+        L"\n4 = Traitor"
+        L"\n5 = I know where the others"
+        L"\n6 = Count matters"
+        L"\n7 = Can't be here"
+        L"\n8 = Solve neighbour"
+        L"\n====================="
+        L"\nR = Restart"
+        L"\nQ = Use everything"
+        L"\nZ = Is game unsolvable?"
+        L"\nE = 1-key press solving"
+        L"\nU = Regenerate until unsolved"
+        L"\nSpace = Show remaining meme count"
+               , L"Hotkeys", MB_ICONINFORMATION);
+}
+
 bool AI::isGameUnsolvable() const
 {
     for (int i = 0; i < field.getTilesCount(); ++i)
@@ -484,18 +505,19 @@ void AI::parseKB(const Keyboard::Event& event)
 {
 	switch (event.GetCode())
 	{
-		case '1':   randClick();             break;
-		case '2':   flagObvious();           break;
-		case '3':   afterFlag();             break;
-        case '4':   traitor();               break;
-        case '5':   iKnowWhereTheOthers();   break;
-        case '6':   countMatters();          break;
-        case '7':   cantBeHere();            break;
-        case '8':   solveNeighbour();        break;
-        case 'Q':   useEverything();         break;
-        case 'Z':   isGameUnsolvable();      break;
+		case VK_F1: showHelp();                   break;
+		case '1':   randClick();                  break;
+		case '2':   flagObvious();                break;
+		case '3':   afterFlag();                  break;
+        case '4':   traitor();                    break;
+        case '5':   iKnowWhereTheOthers();        break;
+        case '6':   countMatters();               break;
+        case '7':   cantBeHere();                 break;
+        case '8':   solveNeighbour();             break;
+        case 'Q':   useEverything();              break;
+        case 'Z':   isGameUnsolvable();           break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
-        case 'U':   regenerateUntilUnsolved(); break;
+        case 'U':   regenerateUntilUnsolved();    break;
 	}
 }
 
