@@ -46,7 +46,6 @@ private:
     void countMatters();
     void solveNeighbour();
     void useEverything();
-    void showHelp();
     bool isGameUnsolvable() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilUnsolved(); 

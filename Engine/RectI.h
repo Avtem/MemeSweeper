@@ -14,6 +14,8 @@ public:
 	static RectI FromCenter( const Vei2& center,int halfWidth,int halfHeight );
 	RectI GetExpanded( int offset ) const;
 	Vei2 GetCenter() const;
+	int getWidth() const { return right - left; } ;
+	int getHeight() const { return bottom - top; } ;
 public:
 	int left;
 	int right;

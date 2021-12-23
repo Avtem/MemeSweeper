@@ -27,6 +27,7 @@
 #include "AI.h"
 #include "Enums.h"
 #include "Sound.h"
+#include "Image.h"
 
 class Game
 {
@@ -54,5 +55,6 @@ private:
 	bool playedSnd = false;
 	Sound sndLose;
 	Sound sndWin;
+	Image imgHotkeys;
 	/********************************/
 };

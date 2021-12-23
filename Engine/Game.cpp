@@ -33,9 +33,10 @@ Game::Game( MainWindow& wnd )
 	field(gfx, 16, 16, 0.15625f),
 	ai(*this, field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
-	sndLose(L"snd\\lose.wav")
+	sndLose(L"snd\\lose.wav"),
+	imgHotkeys(L"img/hotkeys.bmp")
 {
-	field.setDrawingOffset(calcOffsetForField());
+	field.setDrawingOffset(calcOffsetForField()); 
 	Tile::gameState = &gameState;
 }
 
@@ -129,10 +130,13 @@ Vei2 Game::calcOffsetForField() const
 	int scrW = Graphics::ScreenWidth;
 	int scrH = Graphics::ScreenHeight;
 
-	return { (scrW -fieldSize.x) /2, (scrH -fieldSize.y) /2 };
+	// avDis: offset for the field
+	//return { (scrW -fieldSize.x) /2, (scrH -fieldSize.y) /2 };
+	return { 20, 30 }; 
 }
 
 void Game::ComposeFrame()
 {
 	field.draw();
+	gfx.drawImage(280, 0, imgHotkeys);
 }

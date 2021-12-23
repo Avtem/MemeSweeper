@@ -19,11 +19,11 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
-#include "ChiliWin.h"
 #include <d3d11.h>
 #include <wrl.h>
 #include "ChiliException.h"
 #include "Colors.h"
+#include "Image.h"
 #include "RectI.h"
 
 class Graphics
@@ -58,11 +58,24 @@ public:
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
 	void PutPixel( int x,int y,Color c );
-	void DrawRect( int x0,int y0,int x1,int y1,Color c );
-	void DrawRect( const RectI& rect,Color c )
-	{
-		DrawRect( rect.left,rect.top,rect.right,rect.bottom,c );
-	}
+    void DrawRect(int x0, int y0, int x1, int y1, Color c);
+    void DrawRect(const RectI& rect, Color c)
+    {
+        DrawRect(rect.left, rect.top, rect.right, rect.bottom, c);
+    }
+	
+	Color Graphics::getPixel(int x, int y) const;
+	Color Graphics::getMixedColor(int xScr, int yScr, Color imgCol, float opacity = 1.f);
+	void drawRect(const int & left, const int & top, const int & width, const int & height,
+				  const Color &color);
+	void drawImage(int x, int y, const Image& img);
+	void drawImage(int x, int y, const RectI& src, const Image& img);
+	void drawImage(int x, int y, RectI src, const RectI& clipRect, const Image& img);
+	void drawImage(int x, int y, const Image& img, Color chroma);
+	void drawImage(int x, int y, const RectI& src, const Image& img, Color chroma);
+	void drawImage(int x, int y, RectI src, const RectI& clipRect, const Image& img, Color chroma);
+	void drawImageTranslusent(int x, int y, RectI src, const RectI& clipRect, 
+				const Image& img, Color chroma, float opacity = 1.f);
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
@@ -79,6 +92,8 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr int ScreenWidth = 300;
-	static constexpr int ScreenHeight = 300;
+	static constexpr int ScreenWidth = 320 +320;
+	static constexpr int ScreenHeight = 325;
+
+	static RectI getScreenRect();
 };

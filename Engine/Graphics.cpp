@@ -252,6 +252,11 @@ Graphics::~Graphics()
 	if( pImmediateContext ) pImmediateContext->ClearState();
 }
 
+RectI Graphics::getScreenRect()
+{
+	return {0, ScreenWidth, 0, ScreenHeight};
+}
+
 void Graphics::EndFrame()
 {
 	HRESULT hr;
@@ -316,14 +321,114 @@ void Graphics::PutPixel( int x,int y,Color c )
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
 }
 
-void Graphics::DrawRect( int x0,int y0,int x1,int y1,Color c )
+void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 {
-	for( int y = y0; y < y1; ++y )
+	for (int y = y0; y < y1; ++y)
 	{
-		for( int x = x0; x < x1; ++x )
+		for (int x = x0; x < x1; ++x)
 		{
-			PutPixel( x,y,c );
+			PutPixel(x, y, c);
 		}
+	}
+}
+
+
+void Graphics::drawRect(const int &left, const int &top, const int &width, 
+						const int &height, const Color &color)
+{
+	int leftN = width > 0  ? left : left +width;
+	int topN  = height > 0 ? top  : top  +height;
+
+	for(int y = 0; y < abs(height); ++y)	// no off one rule here!
+	{
+		for(int x = 0; x < abs(width); ++x)
+		{
+			PutPixel(x +leftN, y +topN, color);
+		}
+	}
+}
+
+void Graphics::drawImage(int x, int y, const Image& img)
+{
+	drawImage(x, y, img.getRect(), img);
+}
+
+void Graphics::drawImage(int x, int y, const RectI& src, const Image& img)
+{
+	for (int yy = src.top, iy = 0; yy < src.bottom; ++yy, ++iy)
+	{
+		for (int xx = src.left, ix = 0; xx < src.right; ++xx, ++ix)
+			PutPixel(x +ix, y +iy, img.getPixel(xx, yy));
+	}
+}
+
+void Graphics::drawImage(int x, int y, RectI src, const RectI& clipRect,
+						 const Image& img)
+{
+	drawImage(x, y, src, clipRect, img, 0x000000);
+}
+
+void Graphics::drawImage(int x, int y, const Image& img, Color chroma)
+{
+	drawImage(x, y, img.getRect(), img, chroma);
+}
+
+void Graphics::drawImage(int x, int y, const RectI& src, const Image& img, Color chroma)
+{
+	drawImageTranslusent(x, y, src, getScreenRect(), img, chroma);
+}
+
+void Graphics::drawImage(int x, int y, RectI src, const RectI& clipRect, const Image& img, 
+						 Color chroma)
+{
+	drawImageTranslusent(x, y, src, clipRect, img, chroma);
+}
+
+Color Graphics::getPixel(int x, int y) const
+{
+	return pSysBuffer[Graphics::ScreenWidth * y + x];
+}
+
+Color Graphics::getMixedColor(int xScr, int yScr, Color imgCol, float opacity)
+{
+	if(xScr >= ScreenWidth || yScr >= ScreenHeight)
+		return imgCol;
+
+	opacity = std::max(0.f, std::min(1.f, opacity));
+
+	Color bgCol = getPixel(xScr, yScr);
+
+	BYTE r = bgCol.GetR() + float(imgCol.GetR() - bgCol.GetR() ) * opacity;
+	BYTE g = bgCol.GetG() + float(imgCol.GetG() - bgCol.GetG() ) * opacity;
+	BYTE b = bgCol.GetB() + float(imgCol.GetB() - bgCol.GetB() ) * opacity;
+
+	return {r,g,b};
+}
+
+void Graphics::drawImageTranslusent(int x, int y, RectI src, const RectI& clipRect,
+			const Image& img, Color chroma, float opacity)
+{
+		// modify left top
+	src.left += x < clipRect.left ? clipRect.left -x : 0;
+	src.top += y < clipRect.top ? clipRect.top -y : 0;
+	x = std::max(clipRect.left, x);
+	y = std::max(clipRect.top, y);
+
+	// modify right bottom
+	int xRight = x + src.getWidth();
+	int yBot = y + src.getHeight();
+	src.right -= xRight > clipRect.right ? xRight -clipRect.right : 0;
+	src.bottom -= yBot  > clipRect.bottom ? yBot -clipRect.bottom : 0;
+
+	for (int yy = src.top, iy = 0; yy < src.bottom; ++yy, ++iy)
+	{
+		for (int xx = src.left, ix = 0; xx < src.right; ++xx, ++ix)
+			if (chroma.dword == 0x000000 || (img.getPixel(xx, yy).dword) != chroma.dword)
+			{
+				int sx = x +ix;
+				int sy = y +iy;
+				PutPixel(sx, sy, getMixedColor(sx, sy, img.getPixel(xx, yy), opacity));
+			}
 	}
 }
 
