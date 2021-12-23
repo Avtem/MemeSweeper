@@ -77,6 +77,7 @@ bool Tile::isFlagged() const
     return drawState == DrawSt::Flag;
 }
 
+// a tile that was not revealed and is not flagged
 bool Tile::isHidden() const
 {
     return revealed == false && isFlagged() == false;
