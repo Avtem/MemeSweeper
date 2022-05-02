@@ -69,6 +69,7 @@ public:
 	void drawRect(const int & left, const int & top, const int & width, const int & height,
 				  const Color &color);
 	void drawImage(int x, int y, const Image& img);
+	void drawImage(Vei2 vec, const Image& img);
 	void drawImage(int x, int y, const RectI& src, const Image& img);
 	void drawImage(int x, int y, RectI src, const RectI& clipRect, const Image& img);
 	void drawImage(int x, int y, const Image& img, Color chroma);
@@ -93,7 +94,7 @@ private:
 	Color*                                              pSysBuffer = nullptr;
 public:
 	static constexpr int ScreenWidth = 320 +320;
-	static constexpr int ScreenHeight = 325;
+	static constexpr int ScreenHeight = 625;
 
 	static RectI getScreenRect();
 };

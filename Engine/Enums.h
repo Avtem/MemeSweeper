@@ -20,10 +20,10 @@ enum class DrawSt // drawing state
     Normal,
     Flag,
     // after losing:
-    FatalMeme,
-    CorrectFlag,
-    WrongFlag,
-    HiddenMeme
+    FatalMeme,      // click that causes lost
+    CorrectFlag,    // meme that player found
+    WrongFlag,      // empty cell, but player thought there's a meme in it
+    HiddenMeme      // meme that player couldn't find
 };
 enum class ClickRes
 {

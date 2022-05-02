@@ -30,7 +30,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field(gfx, 16, 16, 0.15625f),
+	field(gfx, 16, 16, 0.15625f),	// 0.15 is Windows 7 standard
 	ai(*this, field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav"),
@@ -39,6 +39,7 @@ Game::Game( MainWindow& wnd )
 	field.setDrawingOffset(calcOffsetForField()); 
 	Tile::gameState = &gameState;
 }
+
 
 void Game::Go()
 {
@@ -115,6 +116,8 @@ void Game::UpdateModel()
 	}
 }
 
+
+
 void Game::restartGame(bool randomize)
 {
 	gameState = GameSt::Running;
@@ -138,5 +141,5 @@ Vei2 Game::calcOffsetForField() const
 void Game::ComposeFrame()
 {
 	field.draw();
-	gfx.drawImage(280, 0, imgHotkeys);
+	//gfx.drawImage(280, 0, imgHotkeys);
 }

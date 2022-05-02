@@ -353,6 +353,11 @@ void Graphics::drawImage(int x, int y, const Image& img)
 	drawImage(x, y, img.getRect(), img);
 }
 
+void Graphics::drawImage(Vei2 vec, const Image& img)
+{
+	drawImage(vec.x, vec.y, img.getRect(), img);
+}
+
 void Graphics::drawImage(int x, int y, const RectI& src, const Image& img)
 {
 	for (int yy = src.top, iy = 0; yy < src.bottom; ++yy, ++iy)

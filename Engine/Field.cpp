@@ -1,6 +1,8 @@
 #include "Field.h"
 #include "Mouse.h"
+#include "SpriteCodex.h"
 #include <random>
+#include "Image.h"
 
 std::random_device Field::randDevice;
 std::mt19937 Field::mt(Field::randDevice());
@@ -12,12 +14,22 @@ Field::Field(Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness)
     tilesInH(TilesInH),
     memesFillness(MemesFillness)
 {
+    loadImages();
     tiles = new Tile[tilesInW * TilesInH];
     reset();
 }
 
 Field::~Field()
 {
+    for(auto* e : imgNumbers)
+        delete e;
+
+    delete imgHiddenTile;
+    delete imgFlagged;
+    delete imgMine;
+    delete imgCorrectMeme;
+    delete imgBoom;
+    delete imgWrongFlag;
     delete [] tiles;
 }
 
@@ -27,6 +39,7 @@ void Field::draw() const
     Vei2 dim = getSizeInPx();
     RectI boardR{drawOff, dim.x, dim.y};
     gfx.DrawRect(boardR.GetExpanded(borderThickness), Colors::Gray);
+    
     // draw field
     gfx.DrawRect(boardR, SpriteCodex::baseColor);
 
@@ -39,34 +52,18 @@ void Field::draw() const
             tilePos *= SpriteCodex::tileSize;
             tilePos += drawOff;
             
-            if(!tile.isRevealed())
-                SpriteCodex::DrawTileButton(tilePos, gfx);
             switch (tile.getDrawSt())
             {
-                case DrawSt::HiddenMeme:   SpriteCodex::DrawTileBomb(tilePos, gfx);  break;
-                case DrawSt::CorrectFlag:  SpriteCodex::DrawTileBomb(tilePos, gfx);
-                                           SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
-                case DrawSt::Flag:         SpriteCodex::DrawTileFlag(tilePos, gfx);  break;
-                case DrawSt::WrongFlag:    SpriteCodex::DrawTileCross(tilePos, gfx); break;
-                case DrawSt::FatalMeme:    SpriteCodex::DrawTileBombRed(tilePos, gfx); break;
+                case DrawSt::Normal:       gfx.drawImage(tilePos, *imgHiddenTile); break;
+                case DrawSt::CorrectFlag:  gfx.drawImage(tilePos, *imgCorrectMeme);break;
+                case DrawSt::HiddenMeme:   gfx.drawImage(tilePos, *imgMine); break;
+                case DrawSt::Flag:         gfx.drawImage(tilePos, *imgFlagged);    break;
+                case DrawSt::WrongFlag:    gfx.drawImage(tilePos, *imgWrongFlag);  break;
+                case DrawSt::FatalMeme:    gfx.drawImage(tilePos, *imgBoom);       break;
             }
 
             if(tile.isRevealed() && tile.getObj() == ObjT::Number)
-            {
-            #define drawN(n) SpriteCodex::DrawTile ## n(tilePos, gfx)
-                switch (tile.numOfAdjMemes)
-                {
-                    case 0:  drawN(0);   break;
-                    case 1:  drawN(1);   break;
-                    case 2:  drawN(2);   break;
-                    case 3:  drawN(3);   break;
-                    case 4:  drawN(4);   break;
-                    case 5:  drawN(5);   break;
-                    case 6:  drawN(6);   break;
-                    case 7:  drawN(7);   break;
-                    case 8:  drawN(8);   break;
-                }
-            }
+                gfx.drawImage(tilePos, *imgNumbers.at(tile.numOfAdjMemes));
         }
     }
 }
@@ -142,6 +139,26 @@ void Field::checkWinCondition() const
 int Field::getTilesCount() const
 {
     return tilesInW * tilesInH;
+}
+
+void Field::loadImages()
+{
+    imgHiddenTile = new Image(L"img/hidden.bmp");
+    imgFlagged = new Image(L"img/flagged.bmp");
+    imgCorrectMeme = new Image(L"img/correctMeme.bmp");
+    imgMine = new Image(L"img/meme.bmp");
+    imgWrongFlag = new Image(L"img/wrongFlag.bmp");
+    imgBoom = new Image(L"img/boom.bmp");
+
+    imgNumbers.emplace_back(new Image(L"img/0.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/1.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/2.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/3.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/4.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/5.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/6.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/7.bmp"));
+    imgNumbers.emplace_back(new Image(L"img/8.bmp"));
 }
 
 void Field::revealEverything()
@@ -285,3 +302,4 @@ int Field::getRemainingMemeCount() const
 
     return getMemeCount() -flaggedCount;
 }
+

@@ -4,6 +4,8 @@
 #include "AI.h"
 #include <random>
 #include "Enums.h"
+#include "Graphics.h"
+#include <vector>
 
 class Field
 {
@@ -25,6 +27,13 @@ public:
 private:
     friend AI;
 
+    std::vector<Image*> imgNumbers;	// from 1 to 8
+    Image* imgHiddenTile;
+    Image* imgFlagged;
+    Image* imgWrongFlag;
+    Image* imgCorrectMeme;
+    Image* imgMine;
+    Image* imgBoom;     // last player click
     Graphics& gfx;
     int tilesInW;
     int tilesInH;
@@ -40,6 +49,7 @@ private:
 
     // m.f.
     int getTilesCount() const;
+    void loadImages();
     void revealEverything();
     void revealAdjTiles(const Vei2& pos); // reveals 8 (if they'ren't boms) adj.tiles for tiles with 0
     void putMemes();

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SpriteCodex.h"
 #include "Mouse.h"
 #include "Enums.h"
 
@@ -32,6 +31,6 @@ private:
     DrawSt drawState = DrawSt::Normal;
     bool revealed = false;
 
-    static constexpr int dimension = SpriteCodex::tileSize;
+    static constexpr int dimension = 32;    // 32 pixels
 };
 
