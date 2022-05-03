@@ -50,7 +50,7 @@ private:
     void useEverything();
     bool isGameUnsolvable() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
-    void regenerateUntilUnsolved(); 
+    void regenerateUntilAIcantSolve(); 
     Tile& tileAt(const Vei2& indexPos) const;
 };
 

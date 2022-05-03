@@ -327,7 +327,7 @@ bool AI::areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const
     return false;
 }
 
-void AI::regenerateUntilUnsolved()
+void AI::regenerateUntilAIcantSolve()
 {
     int wonCount = 0;
     while(true)
@@ -338,7 +338,7 @@ void AI::regenerateUntilUnsolved()
         if(isGameUnsolvable())
         {
 #ifdef _DEBUG
-            //avPrint << L"AI detected an unsolvable game! Guh!\n";
+            OutputDebugStringW(L"AI detected an 100% unsolvable game! Yay\n");
 #endif // _DEBUG
             
             ++wonCount;
@@ -352,7 +352,7 @@ void AI::regenerateUntilUnsolved()
     } 
 
 #ifdef _DEBUG
-    //avPrint << L"AI won game: " << wonCount << " times.\n";
+    avPrint << L"AI won game: " << wonCount << " times.\n";
 #endif // _DEBUG
 }
 
@@ -498,7 +498,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case 'Q':   useEverything();              break;
         case 'Z':   isGameUnsolvable();           break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
-        case 'U':   regenerateUntilUnsolved();    break;
+        case 'U':   regenerateUntilAIcantSolve();    break;
 	}
     
     processing = false;

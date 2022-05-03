@@ -52,7 +52,6 @@ private:
 	/********************************/
 	/*  User Variables              */
 	GameSt gameState = GameSt::Running;
-	GenType generationType = GenType::random;
 	Field field;
 	AI ai;	// !depends on field
 	bool playedSnd = false;
@@ -66,5 +65,6 @@ private:
 	Image txtAIdidntSolve;
 	Image radBtnHollow;
 	Image radBtnSelected;
+	Image radBtnSelectedGray;
 	/********************************/
 };

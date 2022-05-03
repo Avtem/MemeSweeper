@@ -74,8 +74,14 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     if(event.GetPosX() < offset.x || event.GetPosY() < offset.y)
         return;
 
+    if(firstClick && generationType == GenType::unsolvableForAI)
+    {
+        ai->regenerateUntilAIcantSolve();
+        firstClick = false;
+        return;
+    }
+    
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
-     
     clickTile(tileInd, event.GetType());
 }
 
@@ -105,6 +111,14 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
             break;
     }
 
+    //switch(generationType)
+    //{
+    //    case GenType::unsolvable100:
+    //        ai->regenerateUntilAIcantSolve();
+    //        break;
+    //    default:
+    //        break;
+    //}
     firstClick = false;
 }
 
@@ -113,7 +127,7 @@ void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
     if(!tileIsValid(index))
         return;
 
-    if (firstClick)
+    if(firstClick)
         parseFirstClick(index, eventType);
 
     tileAt(index).parseMouse(eventType);
@@ -307,8 +321,26 @@ int Field::getRemainingMemeCount() const
     return getMemeCount() -flaggedCount;
 }
 
-bool Field::firstClickHappened() const
+bool Field::willBeFirstClick() const
 {
     return firstClick;
+}
+
+void Field::iterateGenType()
+{
+    generationType = (GenType)(generationType +1);
+    
+    if(generationType > GenType::Last)
+        generationType = GenType::First;
+}
+
+GenType Field::getGenType() const
+{
+    return generationType;
+}
+
+void Field::setAI(AI *ai_ptr)
+{
+    ai = ai_ptr;
 }
 

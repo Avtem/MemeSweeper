@@ -41,9 +41,11 @@ Game::Game( MainWindow& wnd )
 	txt100unsolvable(L"img/text/100unsolvable.bmp"),
 	txtRandom(L"img/text/normal.bmp"),
 	radBtnHollow(L"img/btns/empty.bmp"),
-	radBtnSelected(L"img/btns/selected.bmp")
+	radBtnSelected(L"img/btns/selected.bmp"),
+	radBtnSelectedGray(L"img/btns/selectedGray.bmp")
 {
 	field.setDrawingOffset(calcOffsetForField()); 
+	field.setAI(&ai);
 	Tile::gameState = &gameState;
 }
 
@@ -73,11 +75,9 @@ void Game::UpdateModel()
 		switch (e.GetCode())
 		{
 			case VK_F4:
-				if(!field.firstClickHappened())
+				if(!field.willBeFirstClick())
 					break;
-				generationType = (GenType)(generationType +1);
-				if(generationType > GenType::Last)
-					generationType = GenType::First;
+				field.iterateGenType();
 				break;
 			case 'R':			
 				restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); 
@@ -190,8 +190,9 @@ void Game::drawBtns()
 	gfx.drawImage(drawPos.x, drawPos.y + 30*3, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*4, radBtnHollow);
 
-	gfx.drawImage(drawPos.x, drawPos.y + 30 *(int)generationType,
-											   radBtnSelected);
+	Image& selBtn = field.willBeFirstClick() ? radBtnSelected
+											 : radBtnSelectedGray;
+	gfx.drawImage(drawPos.x, drawPos.y + 30 *(int)field.getGenType(), selBtn);
 }
 
 void Game::ComposeFrame()

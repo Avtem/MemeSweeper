@@ -23,7 +23,10 @@ public:
     int getRand() const;
     int getMemeCount() const;
     int getRemainingMemeCount() const;
-    bool firstClickHappened() const;
+    bool willBeFirstClick() const;
+    void iterateGenType();
+    GenType getGenType() const;
+    void setAI(AI* ai_ptr);
     
 private:
     friend AI;
@@ -36,6 +39,8 @@ private:
     Image* imgMine;
     Image* imgBoom;     // last player click
     Graphics& gfx;
+    AI* ai = nullptr;
+    GenType generationType = GenType::random;
     int tilesInW;
     int tilesInH;
     float memesFillness;
