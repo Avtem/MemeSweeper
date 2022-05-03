@@ -76,15 +76,18 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
 
     if(firstClick)
     {
-        if(generationType == unsolvableForAI)
-            ai->regenerateUntilAIcantSolve();
-        else if(generationType == unsolvable100)
+        if(generationType == unsolvable100)
             ai->regenerateUntilUnsolvable100percent();
-        
+        else if(generationType == unsolvableForAI)
+            ai->regenerateUntilAIcantSolve();
+        else
+            goto normalClick;
+
         firstClick = false;
         return;
     }
     
+normalClick:
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
     clickTile(tileInd, event.GetType());
 }
@@ -95,24 +98,41 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
         return;
 
     int spawnAttempts = 0;
-    switch (firstClickResult)
+    
+    while(true)
     {
-        case FirstClickReveal::Anything:
+        switch (firstClickResult)
+        {
+            case FirstClickReveal::Anything:
+                break;
+            case FirstClickReveal::AnyNumber:
+                while(tileAt(tileInd).getObj() == ObjT::Meme)
+                {
+                    reset(false);
+                    ++spawnAttempts;
+                }
+                break;
+            case FirstClickReveal::Num0Only:
+                while(tileAt(tileInd).numOfAdjMemes != 0)
+                {
+                    reset(false);
+                    ++spawnAttempts;
+                }
+                break;
+        }
+
+        if(generationType == random)     // normal randomized game
             break;
-        case FirstClickReveal::AnyNumber:
-            while(tileAt(tileInd).getObj() == ObjT::Meme)
-            {
-                reset(false);
-                ++spawnAttempts;
-            }
-            break;
-        case FirstClickReveal::Num0Only:
-            while (tileAt(tileInd).numOfAdjMemes != 0)
-            {
-                reset(false);
-                ++spawnAttempts;
-            }
-            break;
+        if(generationType == GenType::solvable100)
+        {
+            ai->randClick();
+            ai->useEverything();
+
+            if(ai->isGameSolved())  // yay, we found one solvable game!
+                break;
+            else
+                reset(true);
+        }
     }
 
     firstClick = false;

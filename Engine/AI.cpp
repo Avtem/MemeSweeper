@@ -267,7 +267,7 @@ bool AI::isGameUnsolvable100percent() const
     for (int i = 0; i < field.getTilesCount(); ++i)
     {
         Tile& t = field.tiles[i];
-        if(t.isRevealed() && isUnsolvable(t))
+        if(t.isRevealed() && isUnsolvableByAI(t))
         {
             t.setBlue();
             return true;
@@ -448,7 +448,12 @@ bool AI::areaIsSolvable(const Tile& t) const
     return int(hidTiles.size()) >= requiredCountToSolve(t);
 }
 
-bool AI::isUnsolvable(const Tile& t) const
+bool AI::isGameSolved() const
+{
+    return field.getRemainingMemeCount() == 0;
+}
+
+bool AI::isUnsolvableByAI(const Tile& t) const
 {
     if(requiredCountToSolve(t) != 1)
         return false; // it's solvable
@@ -473,7 +478,7 @@ bool AI::isUnsolvable(const Tile& t) const
         }
     }
 
-    return true; // yyaaay, it's unsolvable!
+    return true; // yyaaay, it's unsolvable by the AI!
 }
 
 int AI::requiredCountToSolve(const Tile& t) const
