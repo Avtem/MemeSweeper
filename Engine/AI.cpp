@@ -262,7 +262,7 @@ void AI::useEverything()
     }
 }
 
-bool AI::isGameUnsolvable() const
+bool AI::isGameUnsolvable100percent() const
 {
     for (int i = 0; i < field.getTilesCount(); ++i)
     {
@@ -335,21 +335,32 @@ void AI::regenerateUntilAIcantSolve()
         game.restartGame();
         randClick(); 
         useEverything();
-        if(isGameUnsolvable())
-        {
-#ifdef _DEBUG
-            OutputDebugStringW(L"AI detected an 100% unsolvable game! Yay\n");
-#endif // _DEBUG
-            
-            ++wonCount;
-            continue;
-        }
 
         if(*Tile::gameState == GameSt::Running)
             break;
 
         ++wonCount;
     } 
+
+#ifdef _DEBUG
+    avPrint << L"AI won game: " << wonCount << " times.\n";
+#endif // _DEBUG
+}
+
+void AI::regenerateUntilUnsolvable100percent()
+{
+    int wonCount = 0;
+    while(true)
+    {
+        game.restartGame();
+        randClick();
+        useEverything();
+
+        if(isGameUnsolvable100percent())
+            break;
+
+        ++wonCount;
+    }
 
 #ifdef _DEBUG
     avPrint << L"AI won game: " << wonCount << " times.\n";
@@ -496,7 +507,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '7':   cantBeHere();                 break;
         case '8':   solveNeighbour();             break;
         case 'Q':   useEverything();              break;
-        case 'Z':   isGameUnsolvable();           break;
+        case 'Z':   isGameUnsolvable100percent(); break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
         case 'U':   regenerateUntilAIcantSolve();    break;
 	}

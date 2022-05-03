@@ -48,9 +48,10 @@ private:
     void countMatters();
     void solveNeighbour();
     void useEverything();
-    bool isGameUnsolvable() const;
+    bool isGameUnsolvable100percent() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilAIcantSolve(); 
+    void regenerateUntilUnsolvable100percent();
     Tile& tileAt(const Vei2& indexPos) const;
 };
 

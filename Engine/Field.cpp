@@ -74,9 +74,13 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     if(event.GetPosX() < offset.x || event.GetPosY() < offset.y)
         return;
 
-    if(firstClick && generationType == GenType::unsolvableForAI)
+    if(firstClick)
     {
-        ai->regenerateUntilAIcantSolve();
+        if(generationType == unsolvableForAI)
+            ai->regenerateUntilAIcantSolve();
+        else if(generationType == unsolvable100)
+            ai->regenerateUntilUnsolvable100percent();
+        
         firstClick = false;
         return;
     }
@@ -111,14 +115,6 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
             break;
     }
 
-    //switch(generationType)
-    //{
-    //    case GenType::unsolvable100:
-    //        ai->regenerateUntilAIcantSolve();
-    //        break;
-    //    default:
-    //        break;
-    //}
     firstClick = false;
 }
 
