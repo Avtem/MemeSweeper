@@ -16,6 +16,8 @@ public:
 
     // returns true if flagged count == number
     bool areaIsSolved(const Vei2& centerTile) const;
+
+    bool processing = false;    // to improve perfomance
 private:
     class Field& field;
     class Game& game;

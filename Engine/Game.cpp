@@ -43,10 +43,16 @@ Game::Game( MainWindow& wnd )
 
 void Game::Go()
 {
-	gfx.BeginFrame();	
+	if(!ai.processing)
+		gfx.BeginFrame();
+	
 	UpdateModel();
-	ComposeFrame();
-	gfx.EndFrame();
+
+	if(!ai.processing)
+	{
+		ComposeFrame();
+		gfx.EndFrame();
+	}
 }
 
 void Game::UpdateModel()
@@ -120,11 +126,15 @@ void Game::UpdateModel()
 
 void Game::restartGame(bool randomize)
 {
+	ai.processing = true;
+
 	gameState = GameSt::Running;
 	playedSnd = false;
 	field.reset(true, randomize);
 	sndWin.StopAll();
 	sndLose.StopAll();
+
+	ai.processing = false;
 }
 
 Vei2 Game::calcOffsetForField() const

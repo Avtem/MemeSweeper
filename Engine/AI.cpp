@@ -22,6 +22,7 @@ bool AI::areaIsSolved(const Vei2& centerTile) const
     return getAdjFlagCount(centerTile) == t.numOfAdjMemes;
 }
 
+
 void AI::randClick() const
 {
 	int x = field.getRand() %field.tilesInW;
@@ -482,6 +483,8 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
 
 void AI::parseKB(const Keyboard::Event& event)
 {
+    processing = true;
+
 	switch (event.GetCode())
 	{
 		case '1':   randClick();                  break;
@@ -497,6 +500,8 @@ void AI::parseKB(const Keyboard::Event& event)
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
         case 'U':   regenerateUntilUnsolved();    break;
 	}
+    
+    processing = false;
 }
 
 std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) const

@@ -56,7 +56,7 @@ void Field::draw() const
             {
                 case DrawSt::Normal:       gfx.drawImage(tilePos, *imgHiddenTile); break;
                 case DrawSt::CorrectFlag:  gfx.drawImage(tilePos, *imgCorrectMeme);break;
-                case DrawSt::HiddenMeme:   gfx.drawImage(tilePos, *imgMine); break;
+                case DrawSt::HiddenMeme:   gfx.drawImage(tilePos, *imgMine);       break;
                 case DrawSt::Flag:         gfx.drawImage(tilePos, *imgFlagged);    break;
                 case DrawSt::WrongFlag:    gfx.drawImage(tilePos, *imgWrongFlag);  break;
                 case DrawSt::FatalMeme:    gfx.drawImage(tilePos, *imgBoom);       break;
