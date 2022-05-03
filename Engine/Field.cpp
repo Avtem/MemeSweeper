@@ -70,6 +70,10 @@ void Field::draw() const
 
 void Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
+    // sanity check
+    if(event.GetPosX() < offset.x || event.GetPosY() < offset.y)
+        return;
+
     Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
      
     clickTile(tileInd, event.GetType());

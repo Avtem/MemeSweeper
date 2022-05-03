@@ -81,7 +81,8 @@ void Game::UpdateModel()
 	while(!wnd.mouse.IsEmpty())
 	{
         Mouse::Event ev = wnd.mouse.Read();
-		if(!wnd.mouse.IsInWindow() || (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
+		if( !wnd.mouse.IsInWindow() 
+		|| (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
 			continue;
 		
 		if(gameState != GameSt::Running)
