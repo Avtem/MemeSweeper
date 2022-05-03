@@ -43,6 +43,8 @@ private:
 	/********************************/
 	/*  User Functions              */
 	Vei2 calcOffsetForField() const;
+	void drawTexts();
+	void drawBtns();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -50,11 +52,19 @@ private:
 	/********************************/
 	/*  User Variables              */
 	GameSt gameState = GameSt::Running;
+	GenType generationType = GenType::random;
 	Field field;
 	AI ai;	// !depends on field
 	bool playedSnd = false;
 	Sound sndLose;
 	Sound sndWin;
 	Image imgHotkeys;
+	Image txtGenerate;
+	Image txt100unsolvable;
+	Image txt100solvable;
+	Image txtRandom;
+	Image txtAIdidntSolve;
+	Image radBtnHollow;
+	Image radBtnSelected;
 	/********************************/
 };

@@ -23,6 +23,7 @@ public:
     int getRand() const;
     int getMemeCount() const;
     int getRemainingMemeCount() const;
+    bool firstClickHappened() const;
     
 private:
     friend AI;

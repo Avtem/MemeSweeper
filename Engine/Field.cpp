@@ -307,3 +307,8 @@ int Field::getRemainingMemeCount() const
     return getMemeCount() -flaggedCount;
 }
 
+bool Field::firstClickHappened() const
+{
+    return firstClick;
+}
+

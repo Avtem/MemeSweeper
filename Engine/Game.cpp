@@ -34,7 +34,14 @@ Game::Game( MainWindow& wnd )
 	ai(*this, field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav"),
-	imgHotkeys(L"img/hotkeys.bmp")
+	imgHotkeys(L"img/hotkeys.bmp"),
+	txtGenerate(L"img/text/Generate.bmp"),
+	txtAIdidntSolve(L"img/text/AI couldn't solve.bmp"),
+	txt100solvable(L"img/text/100solvable.bmp"),
+	txt100unsolvable(L"img/text/100unsolvable.bmp"),
+	txtRandom(L"img/text/normal.bmp"),
+	radBtnHollow(L"img/btns/empty.bmp"),
+	radBtnSelected(L"img/btns/selected.bmp")
 {
 	field.setDrawingOffset(calcOffsetForField()); 
 	Tile::gameState = &gameState;
@@ -65,8 +72,19 @@ void Game::UpdateModel()
 
 		switch (e.GetCode())
 		{
-			case 'R':			restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); break;
-			case VK_ESCAPE:		PostQuitMessage(0);		break;
+			case VK_F4:
+				if(!field.firstClickHappened())
+					break;
+				generationType = (GenType)(generationType +1);
+				if(generationType > GenType::Last)
+					generationType = GenType::First;
+				break;
+			case 'R':			
+				restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); 
+				break;
+			case VK_ESCAPE:		
+				PostQuitMessage(0);		
+				break;
 			case VK_SPACE: 
 			{
 				MessageBox(wnd.getHwnd(), std::to_wstring(field.getRemainingMemeCount()).c_str(),
@@ -149,8 +167,38 @@ Vei2 Game::calcOffsetForField() const
 	return { 20, 30 }; 
 }
 
+void Game::drawTexts()
+{
+	Vei2 fieldSize = field.getSizeInPx();
+	Vei2 drawPos = {fieldSize.x + 60, 20};
+
+	gfx.drawImage(drawPos.x -20, drawPos.y, txtGenerate, Colors::Magenta);
+	
+	gfx.drawImage(drawPos.x, drawPos.y + 30*1, txtRandom, Colors::Magenta);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*2, txt100solvable, Colors::Magenta);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*3, txtAIdidntSolve, Colors::Magenta);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*4, txt100unsolvable, Colors::Magenta);
+}
+
+void Game::drawBtns()
+{
+	Vei2 fieldSize = field.getSizeInPx();
+	Vei2 drawPos ={fieldSize.x + 40, 20};
+
+	gfx.drawImage(drawPos.x, drawPos.y + 30*1, radBtnHollow);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*2, radBtnHollow);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*3, radBtnHollow);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*4, radBtnHollow);
+
+	gfx.drawImage(drawPos.x, drawPos.y + 30 *(int)generationType,
+											   radBtnSelected);
+}
+
 void Game::ComposeFrame()
 {
 	field.draw();
-	//gfx.drawImage(280, 0, imgHotkeys);
+
+	drawTexts();
+	drawBtns();
+	//gfx.drawImage(280, 0, imgHotkeys);	// hotkey list
 }

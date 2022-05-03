@@ -10,6 +10,16 @@ enum class GameSt
 	Win
 };
 
+enum GenType
+{
+    First = 1,
+    random = 1,     // the lame usual algorithm
+    solvable100,
+    unsolvableForAI,
+    unsolvable100,
+    Last = unsolvable100
+};
+
 enum class ObjT // object type (the actual thing that resides in the tile)
 {
     Meme,
