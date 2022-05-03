@@ -327,44 +327,93 @@ bool AI::areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const
     return false;
 }
 
-void AI::regenerateUntilAIcantSolve()
+void AI::regenerateUntilSolvable100(const Tile& tile)
 {
-    int wonCount = 0;
     while(true)
     {
-        game.restartGame();
-        randClick(); 
+        regenerateUntilClickedTileIsSave(tile);
+        field.clickTile(tile.index, lmbUp);
         useEverything();
 
-        if(*Tile::gameState == GameSt::Running)
+        if(isGameSolved())
             break;
 
-        ++wonCount;
-    } 
+        field.reset(true);
+    }
+
+    field.hideEverything();
+    *Tile::gameState = GameSt::Running;
+    field.clickTile(tile.index, lmbUp);
+}
+
+// IF CURRENT FIELD SATISFIES THE CLICK, IT WON'T DO ANYTHING
+void AI::regenerateUntilClickedTileIsSave(const Tile& tile)
+{
+    int spawnAttempts = 0;
+    switch(field.firstClickResult)
+    {
+        case FirstClickReveal::Anything:
+            break;
+        case FirstClickReveal::AnyNumber:
+            while(tile.getObj() == ObjT::Meme)
+            {
+                field.reset(false);
+                ++spawnAttempts;
+            }
+            break;
+        case FirstClickReveal::Num0Only:
+            while(tile.numOfAdjMemes != 0)
+            {
+                field.reset(false);
+                ++spawnAttempts;
+            }
+            break;
+    }
 
 #ifdef _DEBUG
-    avPrint << L"AI won game: " << wonCount << " times.\n";
+    //avPrint << L"Games generated for safe click: " << spawnAttempts 
+    //    << " times.\n";
 #endif // _DEBUG
 }
 
-void AI::regenerateUntilUnsolvable100percent()
+void AI::regenerateUntilAIcantSolve(const Tile& tile)
 {
     int wonCount = 0;
     while(true)
     {
-        game.restartGame();
-        randClick();
+        regenerateUntilClickedTileIsSave(tile);
+        field.clickTile(tile.index, lmbUp);
         useEverything();
 
-        if(isGameUnsolvable100percent())
+        if(*Tile::gameState == GameSt::Running
+        && isGameUnsolvable100percent() == false)
             break;
 
+        field.reset(true);
         ++wonCount;
     }
 
 #ifdef _DEBUG
     avPrint << L"AI won game: " << wonCount << " times.\n";
 #endif // _DEBUG
+}
+
+void AI::regenerateUntilUnsolvable100percent(const Tile& tile)
+{
+    int wonCount = 0;
+    while(true)
+    {
+        regenerateUntilClickedTileIsSave(tile);
+
+        field.clickTile(tile.index, lmbUp);
+        useEverything();
+
+        if(isGameUnsolvable100percent())
+            break;
+
+        field.reset(true);
+        ++wonCount;
+    }
 }
 
 Tile& AI::tileAt(const Vei2& indexPos) const
@@ -514,7 +563,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case 'Q':   useEverything();              break;
         case 'Z':   isGameUnsolvable100percent(); break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
-        case 'U':   regenerateUntilAIcantSolve();    break;
+        //case 'U':   regenerateUntilAIcantSolve();    break;
 	}
     
     processing = false;

@@ -51,6 +51,11 @@ ObjT Tile::getObj() const
     return obj;
 }
 
+void Tile::hide()
+{
+    revealed = false;
+}
+
 void Tile::setObj(ObjT type)
 {
     obj = type;
@@ -97,12 +102,13 @@ void Tile::reveal()
 {
     switch (obj)
     {
-        case ObjT::Meme:
-            drawState = DrawSt::FatalMeme;
-            revealed = true;
-            *gameState = GameSt::GameOver;
         case ObjT::Number:
             revealed = true;
+            break;
+        case ObjT::Meme:
+            revealed = true;
+            drawState = DrawSt::FatalMeme;
+            *gameState = GameSt::GameOver;
             break;
     }
 }

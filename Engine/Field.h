@@ -12,6 +12,7 @@ class Field
 public:
     Field (Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness = 0.1);
     ~Field();
+    void setAI(AI* ai_ptr);
     void draw() const;
     void parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
     void parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType);
@@ -26,7 +27,6 @@ public:
     bool willBeFirstClick() const;
     void iterateGenType();
     GenType getGenType() const;
-    void setAI(AI* ai_ptr);
     
 private:
     friend AI;
@@ -62,5 +62,6 @@ private:
     bool tileIsValid(const Vei2& index) const;
     void putNumbers();
     Tile& tileAt(const Vei2& index) const;
+    void hideEverything();
 };
 

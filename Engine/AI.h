@@ -54,7 +54,9 @@ private:
     bool isUnsolvableByAI(const Tile& t) const;
     bool isGameUnsolvable100percent() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
-    void regenerateUntilAIcantSolve(); 
-    void regenerateUntilUnsolvable100percent();
+    void regenerateUntilSolvable100(const Tile& tile);
+    void regenerateUntilClickedTileIsSave(const Tile& tile);
+    void regenerateUntilAIcantSolve(const Tile& tile);
+    void regenerateUntilUnsolvable100percent(const Tile& tile);
 };
 

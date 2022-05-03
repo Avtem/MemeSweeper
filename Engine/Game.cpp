@@ -53,12 +53,11 @@ Game::Game( MainWindow& wnd )
 void Game::Go()
 {
 	if(!ai.processing)
-		gfx.BeginFrame();
-	
-	UpdateModel();
-
-	if(!ai.processing)
 	{
+		gfx.BeginFrame();
+		
+		UpdateModel();
+		
 		ComposeFrame();
 		gfx.EndFrame();
 	}
@@ -103,14 +102,7 @@ void Game::UpdateModel()
 		|| (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
 			continue;
 		
-		if(gameState != GameSt::Running)
-		{
-			if(ev.GetType() == Mouse::Event::Type::RRelease)
-				restartGame();
-			
-			return;
-		}
-		else
+		if(gameState == GameSt::Running)
 		{
             Vei2 offset = calcOffsetForField();
             field.parseMouse(ev, offset);
@@ -145,15 +137,10 @@ void Game::UpdateModel()
 
 void Game::restartGame(bool randomize)
 {
-	ai.processing = true;
-
-	gameState = GameSt::Running;
 	playedSnd = false;
 	field.reset(true, randomize);
 	sndWin.StopAll();
 	sndLose.StopAll();
-
-	ai.processing = false;
 }
 
 Vei2 Game::calcOffsetForField() const

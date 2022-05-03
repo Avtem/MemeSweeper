@@ -23,6 +23,7 @@ public:
     void setBlue();
     DrawSt Tile::getDrawSt() const;
     ObjT Tile::getObj() const;
+    void hide();
     
     static GameSt* gameState; // Tile class now controls game state!
 

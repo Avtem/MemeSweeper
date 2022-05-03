@@ -73,78 +73,44 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     // sanity check
     if(event.GetPosX() < offset.x || event.GetPosY() < offset.y)
         return;
+    
+    // get index
+    Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
 
     if(firstClick)
     {
-        if(generationType == unsolvable100)
-            ai->regenerateUntilUnsolvable100percent();
+        if(event.GetType() == rmbUp)
+            return;
+        else if(generationType == unsolvable100)
+            ai->regenerateUntilUnsolvable100percent(tileAt(tileInd));
         else if(generationType == unsolvableForAI)
-            ai->regenerateUntilAIcantSolve();
-        else
-            goto normalClick;
-
+            ai->regenerateUntilAIcantSolve(tileAt(tileInd));
+        else if(generationType == solvable100)  // DONE
+            ai->regenerateUntilSolvable100(tileAt(tileInd));
+        else if(generationType == random)
+            parseFirstClick(tileInd, event.GetType());
+        
         firstClick = false;
-        return;
     }
-    
-normalClick:
-    Vei2 tileInd = (event.GetPosVei() -offset) /SpriteCodex::tileSize;
-    clickTile(tileInd, event.GetType());
+    else   
+        clickTile(tileInd, event.GetType());
 }
 
 void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
 {    
-    if(!firstClick || !tileIsValid(tileInd) || eventType == rmbUp)
+    if(!tileIsValid(tileInd) || eventType == rmbUp)
         return;
 
-    int spawnAttempts = 0;
-    
-    while(true)
-    {
-        switch (firstClickResult)
-        {
-            case FirstClickReveal::Anything:
-                break;
-            case FirstClickReveal::AnyNumber:
-                while(tileAt(tileInd).getObj() == ObjT::Meme)
-                {
-                    reset(false);
-                    ++spawnAttempts;
-                }
-                break;
-            case FirstClickReveal::Num0Only:
-                while(tileAt(tileInd).numOfAdjMemes != 0)
-                {
-                    reset(false);
-                    ++spawnAttempts;
-                }
-                break;
-        }
+    ai->regenerateUntilClickedTileIsSave(tileAt(tileInd));
 
-        if(generationType == random)     // normal randomized game
-            break;
-        if(generationType == GenType::solvable100)
-        {
-            ai->randClick();
-            ai->useEverything();
-
-            if(ai->isGameSolved())  // yay, we found one solvable game!
-                break;
-            else
-                reset(true);
-        }
-    }
-
-    firstClick = false;
+    if(generationType == random)     // normal randomized game
+        clickTile(tileInd, eventType);
 }
 
 void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
 {
     if(!tileIsValid(index))
         return;
-
-    if(firstClick)
-        parseFirstClick(index, eventType);
 
     tileAt(index).parseMouse(eventType);
     if (*Tile::gameState == GameSt::GameOver)
@@ -286,8 +252,20 @@ Tile& Field::tileAt(const Vei2& index) const
     return tiles[index.x +index.y *tilesInW];
 }
 
+void Field::hideEverything()
+{
+    for(int i = 0; i < getTilesCount(); ++i)
+    {
+        tiles[i].hide();
+        tiles[i].setFlag(false);
+    }
+}
+
 void Field::reset(bool resetFlags, bool randomize)
 {
+    if(Tile::gameState)
+        *Tile::gameState = GameSt::Running;
+
     if(!randomize)
     {
         for (int i = 0; i < getTilesCount(); ++i)
