@@ -403,9 +403,9 @@ Color Graphics::getMixedColor(int xScr, int yScr, Color imgCol, float opacity)
 
 	Color bgCol = getPixel(xScr, yScr);
 
-	BYTE r = bgCol.GetR() + float(imgCol.GetR() - bgCol.GetR() ) * opacity;
-	BYTE g = bgCol.GetG() + float(imgCol.GetG() - bgCol.GetG() ) * opacity;
-	BYTE b = bgCol.GetB() + float(imgCol.GetB() - bgCol.GetB() ) * opacity;
+	BYTE r = (BYTE)(bgCol.GetR() + float(imgCol.GetR() - bgCol.GetR() ) * opacity);
+	BYTE g = (BYTE)(bgCol.GetG() + float(imgCol.GetG() - bgCol.GetG() ) * opacity);
+	BYTE b = (BYTE)(bgCol.GetB() + float(imgCol.GetB() - bgCol.GetB() ) * opacity);
 
 	return {r,g,b};
 }
