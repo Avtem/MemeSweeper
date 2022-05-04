@@ -17,7 +17,8 @@ enum GenType
     solvable100,
     unsolvableForAI,
     unsolvable100,
-    Last = unsolvable100
+    without100Unsolved,
+    Last = without100Unsolved
 };
 
 enum class ObjT // object type (the actual thing that resides in the tile)

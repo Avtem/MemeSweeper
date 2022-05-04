@@ -64,6 +64,7 @@ private:
 	Image txtGenerate;
 	Image txt100unsolvable;
 	Image txt100solvable;
+	Image txtWithout100Uns;
 	Image txtRandom;
 	Image txtMemesLeft;
 	Image txtAIdidntSolve;

@@ -70,8 +70,10 @@ void Field::draw() const
 
 void Field::parseMouse(Mouse::Event event, Vei2& offset)
 {
+    auto rightBot = getSizeInPx() + offset;
     // sanity check
-    if(event.GetPosX() < offset.x || event.GetPosY() < offset.y)
+    if(event.GetPosX() < offset.x   || event.GetPosY() < offset.y
+    || event.GetPosX() > rightBot.x || event.GetPosY() > rightBot.y)
         return;
     
     // get index

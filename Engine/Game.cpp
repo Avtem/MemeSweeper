@@ -41,6 +41,7 @@ Game::Game( MainWindow& wnd )
 	txt100unsolvable(L"img/text/100unsolvable.bmp"),
 	txtRandom(L"img/text/normal.bmp"),
 	txtMemesLeft(L"img/text/memesLeft.bmp"),
+	txtWithout100Uns(L"img/text/without100Uns.bmp"),
 	radBtnHollow(L"img/btns/empty.bmp"),
 	radBtnSelected(L"img/btns/selected.bmp"),
 	radBtnSelectedGray(L"img/btns/selectedGray.bmp")
@@ -180,6 +181,7 @@ void Game::drawTexts()
 	gfx.drawImage(drawPos.x, drawPos.y + 30*2, txt100solvable, Colors::Magenta);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*3, txtAIdidntSolve, Colors::Magenta);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*4, txt100unsolvable, Colors::Magenta);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*5, txtWithout100Uns, Colors::Black);
 }
 
 void Game::drawBtns()
@@ -191,6 +193,7 @@ void Game::drawBtns()
 	gfx.drawImage(drawPos.x, drawPos.y + 30*2, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*3, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*4, radBtnHollow);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*5, radBtnHollow);
 
 	Image& selBtn = field.willBeFirstClick() ? radBtnSelected
 											 : radBtnSelectedGray;
