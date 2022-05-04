@@ -37,6 +37,7 @@ public:
 	Game& operator=( const Game& ) = delete;
 	void Go();
 	void restartGame(bool randomize = true);
+	void destroyObjects();
 private:
 	void ComposeFrame();
 	void UpdateModel();
@@ -45,6 +46,7 @@ private:
 	Vei2 calcOffsetForField() const;
 	void drawTexts();
 	void drawBtns();
+	void drawNums();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -57,11 +59,13 @@ private:
 	bool playedSnd = false;
 	Sound sndLose;
 	Sound sndWin;
+	std::vector<Image*>imgNums;
 	Image imgHotkeys;
 	Image txtGenerate;
 	Image txt100unsolvable;
 	Image txt100solvable;
 	Image txtRandom;
+	Image txtMemesLeft;
 	Image txtAIdidntSolve;
 	Image radBtnHollow;
 	Image radBtnSelected;

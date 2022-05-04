@@ -310,7 +310,11 @@ int Field::getRemainingMemeCount() const
 {
     int flaggedCount = 0;
     for (int i = 0; i < getTilesCount(); ++i)
-        flaggedCount += tiles[i].isFlagged() ? 1 : 0;
+    {
+        bool isFlagged = tiles[i].getDrawSt() == DrawSt::Flag
+                      || tiles[i].getDrawSt() == DrawSt::CorrectFlag;
+        flaggedCount += isFlagged ? 1 : 0;
+    }
 
     return getMemeCount() -flaggedCount;
 }

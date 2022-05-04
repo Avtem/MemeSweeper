@@ -40,6 +40,7 @@ Game::Game( MainWindow& wnd )
 	txt100solvable(L"img/text/100solvable.bmp"),
 	txt100unsolvable(L"img/text/100unsolvable.bmp"),
 	txtRandom(L"img/text/normal.bmp"),
+	txtMemesLeft(L"img/text/memesLeft.bmp"),
 	radBtnHollow(L"img/btns/empty.bmp"),
 	radBtnSelected(L"img/btns/selected.bmp"),
 	radBtnSelectedGray(L"img/btns/selectedGray.bmp")
@@ -47,6 +48,13 @@ Game::Game( MainWindow& wnd )
 	field.setDrawingOffset(calcOffsetForField()); 
 	field.setAI(&ai);
 	Tile::gameState = &gameState;
+
+	// load num images
+	for(int i=0; i < 10; ++i)
+	{
+		std::wstring path = L"img/nums/" + std::to_wstring(i) + L".bmp";
+		imgNums.push_back(new Image(path));
+	}
 }
 
 
@@ -143,6 +151,13 @@ void Game::restartGame(bool randomize)
 	sndLose.StopAll();
 }
 
+void Game::destroyObjects()
+{
+	// load num images
+	for(int i=0; i < 10; ++i)
+		delete imgNums.at(i);
+}
+
 Vei2 Game::calcOffsetForField() const
 {
 	Vei2 fieldSize = field.getSizeInPx();
@@ -182,11 +197,30 @@ void Game::drawBtns()
 	gfx.drawImage(drawPos.x, drawPos.y + 30 *(int)field.getGenType(), selBtn);
 }
 
+void Game::drawNums()
+{
+	Vei2 fieldSize = field.getSizeInPx();
+	Vei2 drawPosDig1 = {fieldSize.x + 30, fieldSize.y +6};
+	Vei2 drawPosDig2 = {fieldSize.x + 40, fieldSize.y +6};
+
+	int mcount = field.getRemainingMemeCount();
+
+	gfx.drawImage(drawPosDig1, txtMemesLeft);
+	
+	drawPosDig1.x += 105;
+	drawPosDig2.x += 105;
+
+	if(mcount /10)
+		gfx.drawImage(drawPosDig1, *imgNums.at(mcount /10));
+	gfx.drawImage(drawPosDig2, *imgNums.at(mcount %10));
+}
+
 void Game::ComposeFrame()
 {
 	field.draw();
 
 	drawTexts();
 	drawBtns();
+	drawNums();
 	//gfx.drawImage(280, 0, imgHotkeys);	// hotkey list
 }
