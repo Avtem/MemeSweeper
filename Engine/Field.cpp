@@ -83,14 +83,16 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
     {
         if(event.GetType() == rmbUp)
             return;
-        else if(generationType == unsolvable100)
-            ai->regenerateUntilUnsolvable100percent(tileAt(tileInd));
-        else if(generationType == unsolvableForAI)
-            ai->regenerateUntilAIcantSolve(tileAt(tileInd));
-        else if(generationType == solvable100)  // DONE
-            ai->regenerateUntilSolvable100(tileAt(tileInd));
         else if(generationType == random)
             parseFirstClick(tileInd, event.GetType());
+        else if(generationType == solvable100)
+            ai->regenerateUntilSolvable100(tileAt(tileInd));
+        else if(generationType == unsolvableForAI)
+            ai->regenerateUntilAIcantSolve(tileAt(tileInd));
+        else if(generationType == unsolvable100)
+            ai->regenerateUntilUnsolvable100percent(tileAt(tileInd));
+        else if(generationType == without100Unsolved)
+            ai->regenerateWithout100Unsolv(tileAt(tileInd));
         
         firstClick = false;
     }

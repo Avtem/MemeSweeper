@@ -58,5 +58,6 @@ private:
     void regenerateUntilClickedTileIsSave(const Tile& tile);
     void regenerateUntilAIcantSolve(const Tile& tile);
     void regenerateUntilUnsolvable100percent(const Tile& tile);
+    void regenerateWithout100Unsolv(const Tile& tile);
 };
 

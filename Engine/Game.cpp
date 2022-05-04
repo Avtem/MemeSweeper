@@ -93,12 +93,6 @@ void Game::UpdateModel()
 			case VK_ESCAPE:		
 				PostQuitMessage(0);		
 				break;
-			case VK_SPACE: 
-			{
-				MessageBox(wnd.getHwnd(), std::to_wstring(field.getRemainingMemeCount()).c_str(),
-						   L"Memes left:", 0);
-			}
-			break;
 		}
 
 		ai.parseKB(e);

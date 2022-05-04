@@ -416,6 +416,25 @@ void AI::regenerateUntilUnsolvable100percent(const Tile& tile)
     }
 }
 
+void AI::regenerateWithout100Unsolv(const Tile& tile)
+{
+    while(true)
+    {
+        regenerateUntilClickedTileIsSave(tile);
+        field.clickTile(tile.index, lmbUp);
+        useEverything();
+
+        if(isGameUnsolvable100percent() == false)
+            break;
+
+        field.reset(true);
+    }
+
+    field.hideEverything();
+    *Tile::gameState = GameSt::Running;
+    field.clickTile(tile.index, lmbUp);
+}
+
 Tile& AI::tileAt(const Vei2& indexPos) const
 {
     return field.tiles[indexPos.x + indexPos.y *field.tilesInW];
