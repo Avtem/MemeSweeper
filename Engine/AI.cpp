@@ -567,6 +567,9 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
 
 void AI::parseKB(const Keyboard::Event& event)
 {
+    if(*Tile::gameState != GameSt::Running)
+        return;
+
     processing = true;
 
 	switch (event.GetCode())
