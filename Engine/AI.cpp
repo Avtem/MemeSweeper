@@ -270,9 +270,28 @@ bool AI::isGameUnsolvable100percent() const
         if(t.isRevealed() && isUnsolvableByAI(t))
         {
             t.setBlue();
+            //MessageBox(0, L"it's unsolvable!",0,0);
             return true;
         }
     }
+
+    if(insideBushes())
+        return true;
+
+    return false;
+}
+
+bool AI::insideBushes() const
+{
+    const auto hidTiles = getAllHiddenTiles(false);
+
+    // check whether all hidden tiles aren't surounded with numbers
+    for(const auto* t : hidTiles)
+        if(surroundedWithRevealedNumber(*t))
+            return false;
+
+    if(hidTiles.size() > (size_t)field.getRemainingMemeCount())
+        return true;
 
     return false;
 }
@@ -514,6 +533,16 @@ bool AI::areaIsSolvable(const Tile& t) const
 {
     auto hidTiles = getUnrevealedTiles(t.index, false);
     return int(hidTiles.size()) >= requiredCountToSolve(t);
+}
+
+bool AI::surroundedWithRevealedNumber(const Tile& t) const
+{
+    const auto tiles = getAdjTiles(t.index);
+    for(const Tile* tile : tiles)
+        if(tile->getObj() == ObjT::Number && tile->isRevealed())
+            return true;
+
+    return false;
 }
 
 bool AI::isGameSolved() const

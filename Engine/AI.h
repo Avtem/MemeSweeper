@@ -36,6 +36,7 @@ private:
     const Tile* findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToExclude) const;
     bool areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const;
     bool areaIsSolvable(const Tile& t) const;
+    bool surroundedWithRevealedNumber(const Tile& t) const;
     int requiredCountToSolve (const Tile& t) const;
     int getAdjFlagCount(const Vei2& centerTile) const;
     void randClick() const;
@@ -53,6 +54,7 @@ private:
     bool isGameSolved() const;
     bool isUnsolvableByAI(const Tile& t) const;
     bool isGameUnsolvable100percent() const;
+    bool insideBushes() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilSolvable100(const Tile& tile);
     void regenerateUntilClickedTileIsSave(const Tile& tile);
