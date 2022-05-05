@@ -22,7 +22,8 @@ private:
     class Field& field;
     class Game& game;
 
-    std::vector<Tile*> getAdjTiles(const Vei2& centerTile, int outerRingCount = 1) const;
+    void getAdjTiles(Tile** outputArr, const Vei2& centerTile, 
+                     int outerRingCount = 1) const;
     std::vector<Tile*> getUnrevealedTiles(const Vei2& centerTile, bool includeFlagged) const;
     std::vector<Tile*> getAllHiddenTiles(bool includeFlagged) const;
     std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;

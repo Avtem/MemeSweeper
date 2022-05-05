@@ -91,9 +91,13 @@ void AI::traitor()
             continue;
 
         // find potencial unsolved adjacent tiles (2 for remote traitor)
-        auto adjTiles = getAdjTiles(t.index, 2);
-        for(const Tile* adj : adjTiles)
+        static Tile* adjTiles[25]{};
+        getAdjTiles(adjTiles, t.index, 2);
+
+        for(int i=0; adjTiles[i]; ++i)
         {
+            const Tile* adj = adjTiles[i];
+
             if(!adj->isRevealed() || areaIsSolved(adj->index))
                 continue;
 
@@ -122,12 +126,15 @@ void AI::cantBeHere()
         if (!t.isRevealed() || areaIsSolved(t.index))
             continue;
 
-        auto tNeighbours = getAdjTiles(t.index, 1);
+        static Tile* tNeighbours[25]{};
+        getAdjTiles(tNeighbours, t.index, 1);
         auto tHidTiles = getUnrevealedTiles(t.index, false);
         int tReqToSolve = requiredCountToSolve(t);
 
-        for (const Tile* tNeigh : tNeighbours)
+        for(int i=0; tNeighbours[i]; ++i)
         {
+            const Tile* tNeigh = tNeighbours[i];
+
             if (!tNeigh->isRevealed() || requiredCountToSolve(*tNeigh) != 1)
                 continue;
 
@@ -159,9 +166,12 @@ void AI::iKnowWhereTheOthers()
             continue;
 
         // find unsolved adjacent area. 2 rings for remote iKnowWhereTheOthers
-        auto adjTiles = getAdjTiles(t.index, 2);
-        for (const Tile* adj : adjTiles)
+        static Tile* adjTiles[25]{};
+        getAdjTiles(adjTiles, t.index, 2);
+        for(int i=0; adjTiles[i]; ++i)
         {
+            const Tile* adj = adjTiles[i];
+
             if (!adj->isRevealed() || areaIsSolved(adj->index))
                 continue;
 
@@ -227,9 +237,12 @@ void AI::solveNeighbour()
             continue;
 
         // find unsolved adjacent area. 2 rings for remote iKnowWhereTheOthers
-        auto adjTiles = getAdjTiles(t.index, 1);
-        for (const Tile* adj : adjTiles)
+        static Tile* adjTiles[25]{};
+        getAdjTiles(adjTiles, t.index, 1);
+        for(int i=0; adjTiles[i]; ++i)
         {
+            const Tile* adj = adjTiles[i];
+
             if (!adj->isRevealed() || areaIsSolved(adj->index))
                 continue;
 
@@ -290,10 +303,7 @@ bool AI::insideBushes() const
         if(surroundedWithRevealedNumber(*t))
             return false;
 
-    if(hidTiles.size() > (size_t)field.getRemainingMemeCount())
-        return true;
-
-    return false;
+    return hidTiles.size() > (size_t)field.getRemainingMemeCount();
 }
 
 const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
@@ -336,11 +346,12 @@ const Tile* AI::findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToEx
 
 bool AI::areaContainsTile(const Tile& t, const std::vector<Tile*> tiles) const
 {
-    std::vector<Tile*> adjT = getAdjTiles(t.index);
+    static Tile* adjT[25]{};
+    getAdjTiles(adjT, t.index);
     
-    for(const Tile* aTile : adjT)
+    for(int i=0; adjT[i]; ++i)
         for(const Tile* tile : tiles)
-            if(aTile->index == tile->index)
+            if(adjT[i]->index == tile->index)
                 return true;
 
     return false;
@@ -537,11 +548,15 @@ bool AI::areaIsSolvable(const Tile& t) const
 
 bool AI::surroundedWithRevealedNumber(const Tile& t) const
 {
-    const auto tiles = getAdjTiles(t.index);
-    for(const Tile* tile : tiles)
+    static Tile* tiles[25]{};
+    getAdjTiles(tiles, t.index);
+    
+    for(int i=0; tiles[i]; ++i)
+    {
+        const Tile* tile = tiles[i];
         if(tile->getObj() == ObjT::Number && tile->isRevealed())
             return true;
-
+    }
     return false;
 }
 
@@ -565,9 +580,13 @@ bool AI::isUnsolvableByAI(const Tile& t) const
                 return false; // a hidden tile? Can be solved
         }
 
-        auto hidAdj = getAdjTiles(hidT->index);
-        for (const Tile* hidNum : hidAdj)
+        static Tile* hidAdj[25]{};
+        getAdjTiles(hidAdj, hidT->index);
+
+        for(int i=0; hidAdj[i]; ++i)
         {
+            const Tile* hidNum = hidAdj[i];
+
             auto hidNumAdj = getUnrevealedTiles(hidNum->index, false);
             excludeTiles(hidNumAdj, overlap);
             if(!areaIsSolved(hidNum->index) && hidNumAdj.size() > 0)
@@ -575,7 +594,7 @@ bool AI::isUnsolvableByAI(const Tile& t) const
         }
     }
 
-    return true; // yyaaay, it's unsolvable by the AI!
+    return true; // yyaaay, it's unsolvable by the AI! // OR 100% UNSOLVABLE????
 }
 
 int AI::requiredCountToSolve(const Tile& t) const
@@ -585,11 +604,16 @@ int AI::requiredCountToSolve(const Tile& t) const
 
 int AI::getAdjFlagCount(const Vei2& centerTile) const
 {
-    auto adjT = getAdjTiles(centerTile);
+    static Tile* adjT[25]{};
+    getAdjTiles(adjT, centerTile);
+
     int count = 0;
-    for(const Tile* t : adjT)
+    for(int i=0; adjT[i]; ++i)
+    {
+        const Tile* t = adjT[i];
         if(t->isFlagged())
             ++count;
+    }
 
     return count;
 }
@@ -620,9 +644,10 @@ void AI::parseKB(const Keyboard::Event& event)
     processing = false;
 }
 
-std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) const
-{
-    std::vector<Tile*> vec;
+void AI::getAdjTiles(Tile** outputArr, const Vei2& centerTile, 
+                     int outerRingCount) const
+{    
+    *outputArr = nullptr;
 
     Vei2 adjInd{ centerTile.x -outerRingCount, centerTile.y -outerRingCount };
     int width = 1+ outerRingCount*2;
@@ -635,20 +660,25 @@ std::vector<Tile*> AI::getAdjTiles(const Vei2& centerTile, int outerRingCount) c
         }
 
         if (field.tileIsValid(adjInd) && centerTile != adjInd)
-            vec.push_back(&tileAt(adjInd));
+        {
+            *outputArr = &tileAt(adjInd);
+            ++outputArr;
+        }
     }
-
-    return vec;
+    
+    *outputArr = nullptr; // set end of the array
 }
 
 std::vector<Tile*> AI::getUnrevealedTiles(const Vei2& centerTile, bool includeFlagged) const
 {
-    std::vector<Tile*> adjTiles = getAdjTiles(centerTile);
+    static Tile* adjTiles[25]{};
+    getAdjTiles(adjTiles, centerTile);
 
     std::vector<Tile*> hidTiles;
 
-    for (Tile* t : adjTiles)
+    for(int i=0; adjTiles[i]; ++i)
     {
+        Tile* t = adjTiles[i];
         bool include = includeFlagged ? true
                                       : !t->isFlagged();
         if (!t->isRevealed() && include)
