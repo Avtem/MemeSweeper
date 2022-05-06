@@ -277,21 +277,9 @@ void AI::useEverything()
 
 bool AI::isGameUnsolvable100percent() const
 {
-    for (int i = 0; i < field.getTilesCount(); ++i)
-    {
-        Tile& t = field.tiles[i];
-        if(t.isRevealed() && isUnsolvableByAI(t))
-        {
-            t.setBlue();
-            //MessageBox(0, L"it's unsolvable!",0,0);
-            return true;
-        }
-    }
-
-    if(insideBushes())
-        return true;
-
-    if(theSquareLast())
+    if( thereIsSingle()
+    ||  insideBushes()
+    ||  theSquareLast() )
         return true;
 
     return false;
@@ -324,6 +312,18 @@ bool AI::theSquareLast() const
     return toTheRight(hidden.at(0)->index, hidden.at(1)->index)
         && isBelow(hidden.at(0)->index, hidden.at(2)->index)
         && toTheRight(hidden.at(2)->index, hidden.at(3)->index);
+}
+
+bool AI::thereIsSingle() const
+{
+    for(int i = 0; i < field.getTilesCount(); ++i)
+    {
+        const Tile& t = field.tiles[i];
+        if(t.isRevealed() && isSingle(t))
+            return true;
+    }
+
+    return false;
 }
 
 const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
@@ -605,7 +605,7 @@ bool AI::isGameSolved() const
     return field.getRemainingMemeCount() == 0;
 }
 
-bool AI::isUnsolvableByAI(const Tile& t) const
+bool AI::isSingle(const Tile& t) const
 {
     if(requiredCountToSolve(t) != 1)
         return false; // it's solvable
@@ -634,7 +634,7 @@ bool AI::isUnsolvableByAI(const Tile& t) const
         }
     }
 
-    return true; // yyaaay, it's unsolvable by the AI! // OR 100% UNSOLVABLE????
+    return true; // yyaaay, it's a single!
 }
 
 int AI::requiredCountToSolve(const Tile& t) const

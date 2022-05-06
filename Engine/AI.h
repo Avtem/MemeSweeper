@@ -59,9 +59,10 @@ private:
     // detecting unsolvable
     bool insideBushes() const;
     bool theSquareLast() const; // 2x2 square that is next to border
+    bool thereIsSingle() const;
     // global stuff
     bool isGameSolved() const;
-    bool isUnsolvableByAI(const Tile& t) const;
+    bool isSingle(const Tile& t) const;
     bool isGameUnsolvable100percent() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilSolvable100(const Tile& tile);
