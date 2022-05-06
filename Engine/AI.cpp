@@ -291,6 +291,9 @@ bool AI::isGameUnsolvable100percent() const
     if(insideBushes())
         return true;
 
+    if(theSquareLast())
+        return true;
+
     return false;
 }
 
@@ -304,6 +307,23 @@ bool AI::insideBushes() const
             return false;
 
     return hidTiles.size() > (size_t)field.getRemainingMemeCount();
+}
+
+bool AI::theSquareLast() const
+{
+    // must have.
+    if(field.getRemainingMemeCount() != 2)
+        return false;
+
+    auto hidden = getAllHiddenTiles(false);
+    if(hidden.size() != 4)
+        return false;
+
+    // getAllHiddenTiles puts them in a row-by-row order
+
+    return toTheRight(hidden.at(0)->index, hidden.at(1)->index)
+        && isBelow(hidden.at(0)->index, hidden.at(2)->index)
+        && toTheRight(hidden.at(2)->index, hidden.at(3)->index);
 }
 
 const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
@@ -468,6 +488,26 @@ void AI::regenerateWithout100Unsolv(const Tile& tile)
 Tile& AI::tileAt(const Vei2& indexPos) const
 {
     return field.tiles[indexPos.x + indexPos.y *field.tilesInW];
+}
+
+bool AI::toTheRight(const Vei2& pos1, const Vei2& pos2) const
+{
+    return pos1.y == pos2.y && pos1.x == pos2.x -1;
+}
+
+bool AI::toTheLeft(const Vei2& pos1, const Vei2& pos2) const
+{
+    return pos1.y == pos2.y && pos1.x == pos2.x +1;
+}
+
+bool AI::isAbove(const Vei2& pos1, const Vei2& pos2) const
+{
+    return pos1.x == pos2.x && pos1.y == pos2.y +1;
+}
+
+bool AI::isBelow(const Vei2& pos1, const Vei2& pos2) const
+{
+    return pos1.x == pos2.x && pos1.y == pos2.y -1;
 }
 
 std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const

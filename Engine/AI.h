@@ -50,12 +50,19 @@ private:
     void solveNeighbour();
     void useEverything();
     Tile& tileAt(const Vei2& indexPos) const;
+    // tells if pos2 is to the right of pos1
+    bool toTheRight(const Vei2& pos1, const Vei2& pos2) const; 
+    bool toTheLeft(const Vei2& pos1, const Vei2& pos2) const; 
+    bool isAbove(const Vei2& pos1, const Vei2& pos2) const; 
+    bool isBelow(const Vei2& pos1, const Vei2& pos2) const; 
 
+    // detecting unsolvable
+    bool insideBushes() const;
+    bool theSquareLast() const; // 2x2 square that is next to border
     // global stuff
     bool isGameSolved() const;
     bool isUnsolvableByAI(const Tile& t) const;
     bool isGameUnsolvable100percent() const;
-    bool insideBushes() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilSolvable100(const Tile& tile);
     void regenerateUntilClickedTileIsSave(const Tile& tile);
