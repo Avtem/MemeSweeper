@@ -35,6 +35,8 @@ Game::Game( MainWindow& wnd )
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav"),
 	imgHotkeys(L"img/hotkeys.bmp"),
+	imgWin(L"img/win.bmp"),
+	imgLose(L"img/lose.bmp"),
 	txtGenerate(L"img/text/Generate.bmp"),
 	txtAIdidntSolve(L"img/text/AI couldn't solve.bmp"),
 	txt100solvable(L"img/text/100solvable.bmp"),
@@ -161,13 +163,13 @@ Vei2 Game::calcOffsetForField() const
 
 	// avDis: offset for the field
 	//return { (scrW -fieldSize.x) /2, (scrH -fieldSize.y) /2 };
-	return { 20, 30 }; 
+	return { 30, 30 }; 
 }
 
 void Game::drawTexts()
 {
 	Vei2 fieldSize = field.getSizeInPx();
-	Vei2 drawPos = {fieldSize.x + 60, 20};
+	Vei2 drawPos = {fieldSize.x + 70, 20};
 
 	gfx.drawImage(drawPos.x -20, drawPos.y, txtGenerate, Colors::Magenta);
 	
@@ -181,7 +183,7 @@ void Game::drawTexts()
 void Game::drawBtns()
 {
 	Vei2 fieldSize = field.getSizeInPx();
-	Vei2 drawPos ={fieldSize.x + 40, 20};
+	Vei2 drawPos ={fieldSize.x + 50, 20};
 
 	gfx.drawImage(drawPos.x, drawPos.y + 30*1, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*2, radBtnHollow);
@@ -197,8 +199,8 @@ void Game::drawBtns()
 void Game::drawNums()
 {
 	Vei2 fieldSize = field.getSizeInPx();
-	Vei2 drawPosDig1 = {fieldSize.x + 30, fieldSize.y +6};
-	Vei2 drawPosDig2 = {fieldSize.x + 40, fieldSize.y +6};
+	Vei2 drawPosDig1 = {fieldSize.x + 40, fieldSize.y +6};
+	Vei2 drawPosDig2 = {fieldSize.x + 50, fieldSize.y +6};
 
 	int mcount = field.getRemainingMemeCount();
 
@@ -212,6 +214,30 @@ void Game::drawNums()
 	gfx.drawImage(drawPosDig2, *imgNums.at(mcount %10));
 }
 
+void Game::drawWinning()
+{
+	auto offset = calcOffsetForField();
+	offset += field.getSizeInPx();
+	offset.x -= imgWin.getWidth();
+	offset.y -= imgWin.getHeight();
+	offset /= 2;
+	offset += {10,10};	// just a bit to the right to make it look better
+
+	gfx.drawImage(offset.x, offset.y, imgWin, 0x000001);
+}
+
+void Game::drawLoosing()
+{
+	auto offset = calcOffsetForField();
+	offset += field.getSizeInPx();
+	offset.x -= imgLose.getWidth();
+	offset.y -= imgLose.getHeight();
+	offset /= 2;
+	offset += {10, 10};	// just a bit to the right to make it look better
+
+	gfx.drawImage(offset.x, offset.y, imgLose, 0x000001);
+}
+
 void Game::ComposeFrame()
 {
 	field.draw();
@@ -220,4 +246,9 @@ void Game::ComposeFrame()
 	drawBtns();
 	drawNums();
 	//gfx.drawImage(280, 0, imgHotkeys);	// hotkey list
+
+	if(gameState == GameSt::Win)
+		drawWinning();
+	if(gameState == GameSt::GameOver)
+		drawLoosing();
 }

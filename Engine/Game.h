@@ -47,6 +47,8 @@ private:
 	void drawTexts();
 	void drawBtns();
 	void drawNums();
+	void drawWinning();
+	void drawLoosing();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -60,6 +62,8 @@ private:
 	Sound sndLose;
 	Sound sndWin;
 	std::vector<Image*>imgNums;
+	Image imgWin;
+	Image imgLose;
 	Image imgHotkeys;
 	Image txtGenerate;
 	Image txt100unsolvable;
