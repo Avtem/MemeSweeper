@@ -277,11 +277,11 @@ void AI::useEverything()
 
 bool AI::isGameUnsolvable100percent() const
 {
-    //if( thereIsSingle()
-    //||  insideBushes()
-    //||  theSquare()
-    //||  theSquareLast() )
-    if(  theSquare() )
+    if( thereIsSingle()
+    || theSquare()
+    || theSquare()
+    || theSquareLast()
+    || insideBushes() )
         return true;
 
     return false;
@@ -316,16 +316,15 @@ bool AI::theSquare() const
 
 bool AI::theSquareLast() const
 {
-    // must have.
-    if(field.getRemainingMemeCount() != 2)
+    // it's only unsolvable when there are 2 memes left
+    if(field.getRemainingMemeCount() == 2)
+    {
+        const auto hidden = getAllHiddenTiles(false);
+        return hidden.size() == 4
+            && isAhid2x2Square(hidden.at(0)->index);
+    }
+    else
         return false;
-
-    auto hidden = getAllHiddenTiles(false);
-    if(hidden.size() != 4)
-        return false;
-
-    // getAllHiddenTiles puts them in a row-by-row order
-    return isAhid2x2Square(hidden.at(0)->index);
 }
 
 bool AI::thereIsSingle() const

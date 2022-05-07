@@ -12,13 +12,13 @@ enum class GameSt
 
 enum GenType
 {
-    First = 1,
+    FIRST = 1,
     random = 1,     // the lame usual algorithm
     solvable100,
     unsolvableForAI,
     unsolvable100,
     without100Unsolved,
-    Last = without100Unsolved
+    LAST = without100Unsolved
 };
 
 enum class ObjT // object type (the actual thing that resides in the tile)
@@ -28,8 +28,8 @@ enum class ObjT // object type (the actual thing that resides in the tile)
 };
 enum class DrawSt // drawing state
 {
-    Normal,
-    Flag,
+    Normal,         // ????
+    Flag,           // player flagged it
     // after losing:
     FatalMeme,      // click that causes lost
     CorrectFlag,    // meme that player found

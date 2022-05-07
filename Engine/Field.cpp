@@ -332,8 +332,8 @@ void Field::iterateGenType()
 {
     generationType = (GenType)(generationType +1);
     
-    if(generationType > GenType::Last)
-        generationType = GenType::First;
+    if(generationType > GenType::LAST)
+        generationType = GenType::FIRST;
 }
 
 GenType Field::getGenType() const
