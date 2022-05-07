@@ -40,6 +40,10 @@ private:
     bool surroundedWithRevealedNumber(const Tile& t) const;
     int requiredCountToSolve (const Tile& t) const;
     int getAdjFlagCount(const Vei2& centerTile) const;
+    bool isAhid2x2Square(const Vei2& ind) const;
+    bool isSquare2x2surroundedWithHidTiles(const Vei2& ind) const;
+    bool isSquareUnsolvable(const Vei2& ind) const;
+
     void randClick() const;
     void flagObvious();
     void afterFlag();
@@ -58,7 +62,8 @@ private:
 
     // detecting unsolvable
     bool insideBushes() const;
-    bool theSquareLast() const; // 2x2 square that is next to border
+    bool theSquare() const;
+    bool theSquareLast() const; // 2x2 square only when there're 2 memes left
     bool thereIsSingle() const;
     // global stuff
     bool isGameSolved() const;

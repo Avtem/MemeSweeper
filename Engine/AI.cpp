@@ -277,9 +277,11 @@ void AI::useEverything()
 
 bool AI::isGameUnsolvable100percent() const
 {
-    if( thereIsSingle()
-    ||  insideBushes()
-    ||  theSquareLast() )
+    //if( thereIsSingle()
+    //||  insideBushes()
+    //||  theSquare()
+    //||  theSquareLast() )
+    if(  theSquare() )
         return true;
 
     return false;
@@ -297,6 +299,21 @@ bool AI::insideBushes() const
     return hidTiles.size() > (size_t)field.getRemainingMemeCount();
 }
 
+bool AI::theSquare() const
+{
+    const auto hidden = getAllHiddenTiles(false);
+
+    for(const Tile* t : hidden)
+    {
+        if( isAhid2x2Square(t->index)
+        && !isSquare2x2surroundedWithHidTiles(t->index)
+        && isSquareUnsolvable(t->index))
+            return true;
+    }
+
+    return false;
+}
+
 bool AI::theSquareLast() const
 {
     // must have.
@@ -308,10 +325,7 @@ bool AI::theSquareLast() const
         return false;
 
     // getAllHiddenTiles puts them in a row-by-row order
-
-    return toTheRight(hidden.at(0)->index, hidden.at(1)->index)
-        && isBelow(hidden.at(0)->index, hidden.at(2)->index)
-        && toTheRight(hidden.at(2)->index, hidden.at(3)->index);
+    return isAhid2x2Square(hidden.at(0)->index);
 }
 
 bool AI::thereIsSingle() const
@@ -658,11 +672,76 @@ int AI::getAdjFlagCount(const Vei2& centerTile) const
     return count;
 }
 
+bool AI::isAhid2x2Square(const Vei2& ind) const
+{
+    if(!tileAt(ind).isHidden())
+        return false;
+
+    bool tile2 = field.tileIsValid({ind.x +1, ind.y})
+               && tileAt({ind.x +1, ind.y}).isHidden();
+    bool tile3 = field.tileIsValid({ind.x, ind.y +1})
+        && tileAt({ind.x, ind.y +1}).isHidden();
+    bool tile4 = field.tileIsValid({ind.x +1, ind.y +1})
+        && tileAt({ind.x +1, ind.y +1}).isHidden();
+
+    return tile2 && tile3 && tile4;
+}
+
+bool AI::isSquare2x2surroundedWithHidTiles(const Vei2& ind) const
+{
+    // checks the 2 adj.tiles from each side
+    for(int xx=ind.x -2, yy=ind.y -2,
+        i = 0; i < 6*6; ++i)
+    {
+        // ignore the 2x2 square
+        if(i != 14 && i != 15 && i != 20 && i != 21)
+        {
+            if(field.tileIsValid({xx,yy}))
+                if(tileAt({xx,yy}).isHidden())
+                    return true;
+        }
+
+        // jump to the next row
+        if(i && (i +1) %6 == 0)
+        {
+            xx = ind.x -2;
+            ++yy;
+        }
+        else
+            ++xx;
+    }
+
+    return false;
+}
+
+  // p means Position of the topleft tile in the square
+bool AI::isSquareUnsolvable(const Vei2& p) const
+{
+    // check if tile is valid
+#define valid(X,Y) field.tileIsValid(Vei2(X,Y))
+    // check if area requires 1 meme to solve
+#define req1(X,Y) requiredCountToSolve(tileAt(Vei2(X,Y))) == 1
+
+    bool topIsFilled = valid(p.x,    p.y -1) && req1(p.x,    p.y -1)
+                    || valid(p.x +1, p.y -1) && req1(p.x +1, p.y -1);
+    bool botIsFilled = valid(p.x,    p.y +2) && req1(p.x,    p.y +2)
+                    || valid(p.x +1, p.y +2) && req1(p.x +1, p.y +2);
+    if(topIsFilled && botIsFilled)
+        return true;
+
+
+    bool leftIsFilled  = valid(p.x -1,  p.y)    && req1(p.x -1, p.y)
+                      || valid(p.x -1,  p.y +1) && req1(p.x -1, p.y +1);
+    bool rightIsFilled = valid(p.x +2, p.y)    && req1(p.x +2, p.y)
+                      || valid(p.x +2, p.y +1) && req1(p.x +2, p.y +1);
+    return leftIsFilled && rightIsFilled;
+}
+
 void AI::parseKB(const Keyboard::Event& event)
 {
     if(*Tile::gameState != GameSt::Running)
         return;
-
+    
     processing = true;
 
 	switch (event.GetCode())
