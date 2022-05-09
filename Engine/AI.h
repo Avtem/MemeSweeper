@@ -28,8 +28,9 @@ private:
     std::vector<Tile*> getAllHiddenTiles(bool includeFlagged) const;
     std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;
     std::vector<Tile*> getNonOverlapTiles(const Tile* t, const Tile* adjT) const; // returns non-overlapped tiles
+    std::vector<Tile*> getSquareOuterRing(const Tile* t, int ringCount = 1) const;
     void excludeTiles(std::vector<Tile*>& mainVec, 
-                                    const std::vector<Tile*>& tilesToExclude) const;
+                          const std::vector<Tile*>& tilesToExclude) const;
     bool solvableWithoutTilesOne(const Tile* t, std::vector<Tile*>& tilesToExclude) const;
     bool solvableWithTiles(const Tile* t, std::vector<Tile*>& tiles) const;
     bool impossibleWithoutTiles(const Tile* t, std::vector<Tile*>& overlap) const;
@@ -53,6 +54,7 @@ private:
     void countMatters();
     void solveNeighbour();
     void useEverything();
+    void lastSquare3();
     Tile& tileAt(const Vei2& indexPos) const;
     // tells if pos2 is to the right of pos1
     bool toTheRight(const Vei2& pos1, const Vei2& pos2) const; 

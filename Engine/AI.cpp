@@ -272,17 +272,48 @@ void AI::useEverything()
         iKnowWhereTheOthers();
         countMatters();
         solveNeighbour();
+        lastSquare3();
+
+        if(*Tile::gameState == GameSt::Win)
+            break;
+    }
+}
+
+void AI::lastSquare3()
+{
+    if(field.getRemainingMemeCount() != 3)
+        return;
+
+    const auto hidTiles = getAllHiddenTiles(false);
+    if(hidTiles.size() == 4 && isAhid2x2Square(hidTiles.at(0)->index))
+    {
+        auto outerRing = getSquareOuterRing(hidTiles.at(0));
+        for(int i=outerRing.size() -1; i >= 0; --i)
+            if(!outerRing.at(i)->isRevealed())
+                outerRing.erase(outerRing.begin() +i);
+
+        // find intersection where there's only 1 tile
+        for(int i=1; i < outerRing.size(); ++i)
+        {
+            auto overlap = getHidOverlapTiles(outerRing.at(0)->index,
+                                    outerRing.at(i)->index);
+            if(overlap.size() == 1)
+            {
+                field.clickTile(overlap.at(0)->index, lmbUp);
+                return;
+            }
+        }
     }
 }
 
 bool AI::isGameUnsolvable100percent() const
 {
     if( thereIsSingle()
-    || theSquare()
-    || theSquare()
-    || theSquareLast()
-    || insideBushes() )
+    ||  theSquare()
+    ||  theSquareLast()
+    ||  insideBushes() )
         return true;
+    
 
     return false;
 }
@@ -556,6 +587,36 @@ std::vector<Tile*> AI::getNonOverlapTiles(const Tile* t, const Tile* adjT) const
     return nonOverlap;
 }
 
+std::vector<Tile*> AI::getSquareOuterRing(const Tile* t, int ringCount) const
+{
+    std::vector<Tile*> tiles;
+
+    const int sideLen = 2 +ringCount *2;
+    Vei2 currPos = {t->index.x -ringCount, t->index.y -ringCount};
+    for(int i=0; i < sideLen*sideLen; ++i)
+    {
+        if(currPos != t->index   // anything except THE 2x2 square
+        && currPos != Vei2{t->index.x +1, t->index.y}
+        && currPos != Vei2{t->index.x   , t->index.y +1}
+        && currPos != Vei2{t->index.x +1, t->index.y +1})
+        {
+            if(field.tileIsValid(currPos))
+                tiles.push_back(&tileAt(currPos));
+        }
+
+        // get to next row
+        if(i && i %sideLen == 0)
+        {
+            currPos.x = t->index.x -ringCount;
+            ++currPos.y;
+        }
+        else
+            ++ currPos.x;
+    }
+
+    return tiles;
+}
+
 void AI::excludeTiles(std::vector<Tile*>& mainVec,
                                     const std::vector<Tile*>& tilesToExclude) const
 {
@@ -689,26 +750,10 @@ bool AI::isAhid2x2Square(const Vei2& ind) const
 bool AI::isSquare2x2surroundedWithHidTiles(const Vei2& ind) const
 {
     // checks the 2 adj.tiles from each side
-    for(int xx=ind.x -2, yy=ind.y -2,
-        i = 0; i < 6*6; ++i)
-    {
-        // ignore the 2x2 square
-        if(i != 14 && i != 15 && i != 20 && i != 21)
-        {
-            if(field.tileIsValid({xx,yy}))
-                if(tileAt({xx,yy}).isHidden())
-                    return true;
-        }
-
-        // jump to the next row
-        if(i && (i +1) %6 == 0)
-        {
-            xx = ind.x -2;
-            ++yy;
-        }
-        else
-            ++xx;
-    }
+    const auto hidden = getSquareOuterRing(&tileAt(ind), 2);
+    for(const Tile* t: hidden)
+        if(t->isHidden())
+            return true;
 
     return false;
 }
@@ -753,10 +798,10 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();               break;
         case '7':   cantBeHere();                 break;
         case '8':   solveNeighbour();             break;
+        case '9':   lastSquare3();                break;
         case 'Q':   useEverything();              break;
         case 'Z':   isGameUnsolvable100percent(); break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
-        //case 'U':   regenerateUntilAIcantSolve();    break;
 	}
     
     processing = false;
