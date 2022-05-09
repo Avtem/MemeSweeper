@@ -308,12 +308,14 @@ void AI::lastSquare3()
 
 bool AI::isGameUnsolvable100percent() const
 {
+    if(*Tile::gameState == GameSt::Win)
+        return false;
+
     if( thereIsSingle()
     ||  theSquare()
     ||  theSquareLast()
     ||  insideBushes() )
         return true;
-    
 
     return false;
 }
@@ -451,14 +453,14 @@ void AI::regenerateUntilClickedTileIsSave(const Tile& tile)
         case FirstClickReveal::AnyNumber:
             while(tile.getObj() == ObjT::Meme)
             {
-                field.reset(false);
+                field.reset(true);
                 ++spawnAttempts;
             }
             break;
         case FirstClickReveal::Num0Only:
             while(tile.numOfAdjMemes != 0)
             {
-                field.reset(false);
+                field.reset(true);
                 ++spawnAttempts;
             }
             break;
@@ -679,6 +681,7 @@ bool AI::isGameSolved() const
     return field.getRemainingMemeCount() == 0;
 }
 
+// BEFORE CALLING IT, MAKE SURE you are not in WIN state
 bool AI::isSingle(const Tile& t) const
 {
     if(requiredCountToSolve(t) != 1)

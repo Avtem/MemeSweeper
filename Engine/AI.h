@@ -69,7 +69,7 @@ private:
     bool thereIsSingle() const;
     // global stuff
     bool isGameSolved() const;
-    bool isSingle(const Tile& t) const;
+    bool isSingle(const Tile& t) const; // BEFORE CALLING IT, MAKE SURE you are not in WIN state
     bool isGameUnsolvable100percent() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilSolvable100(const Tile& tile);
