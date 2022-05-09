@@ -272,19 +272,20 @@ void AI::useEverything()
         iKnowWhereTheOthers();
         countMatters();
         solveNeighbour();
-        lastSquare3();
+        //lastSquare1or3();
 
         if(*Tile::gameState == GameSt::Win)
             break;
     }
 }
 
-void AI::lastSquare3()
+void AI::lastSquare1or3()
 {
-    if(field.getRemainingMemeCount() != 3)
+    const int memesLeft = field.getRemainingMemeCount();
+    if(memesLeft != 1 && memesLeft != 3)
         return;
 
-    const auto hidTiles = getAllHiddenTiles(false);
+    auto hidTiles = getAllHiddenTiles(false);
     if(hidTiles.size() == 4 && isAhid2x2Square(hidTiles.at(0)->index))
     {
         auto outerRing = getSquareOuterRing(hidTiles.at(0));
@@ -299,7 +300,13 @@ void AI::lastSquare3()
                                     outerRing.at(i)->index);
             if(overlap.size() == 1)
             {
-                field.clickTile(overlap.at(0)->index, lmbUp);
+                if(memesLeft == 1)
+                {
+                    excludeTiles(hidTiles, overlap);
+                    field.clickTile(hidTiles.at(0)->index, lmbUp);
+                }
+                else
+                    field.clickTile(overlap.at(0)->index, lmbUp);
                 return;
             }
         }
@@ -316,6 +323,12 @@ bool AI::isGameUnsolvable100percent() const
     ||  theSquareLast()
     ||  insideBushes() )
         return true;
+
+    //auto hid = getAllHiddenTiles(false);
+    //if(hid.size() == 4
+    //&& field.getRemainingMemeCount() == 1
+    //&& isAhid2x2Square(hid.at(0)->index))
+    //    return true;
 
     return false;
 }
@@ -801,7 +814,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();               break;
         case '7':   cantBeHere();                 break;
         case '8':   solveNeighbour();             break;
-        case '9':   lastSquare3();                break;
+        case '9':   lastSquare1or3();                break;
         case 'Q':   useEverything();              break;
         case 'Z':   isGameUnsolvable100percent(); break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving

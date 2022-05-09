@@ -54,7 +54,7 @@ private:
     void countMatters();
     void solveNeighbour();
     void useEverything();
-    void lastSquare3();
+    void lastSquare1or3();
     Tile& tileAt(const Vei2& indexPos) const;
     // tells if pos2 is to the right of pos1
     bool toTheRight(const Vei2& pos1, const Vei2& pos2) const; 
