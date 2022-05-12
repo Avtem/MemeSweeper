@@ -15,7 +15,11 @@ Field::Field(Graphics& Gfx, int TilesInW, int TilesInH, float MemesFillness)
     memesFillness(MemesFillness)
 {
     loadImages();
+    
     tiles = new Tile[tilesInW * TilesInH];
+    for(int i = 0; i < getTileCount(); ++i)
+        tiles[i].index ={i %tilesInW, i /tilesInW};
+
     reset();
 }
 
@@ -93,6 +97,11 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
             ai->regenerateUntilUnsolvable100percent(tileAt(tileInd));
         else if(generationType == without100Unsolved)
             ai->regenerateWithout100Unsolv(tileAt(tileInd));
+        else if(generationType == GenType::loadFromFile)
+        {
+            loadFromFile(L"img/field.bmp");
+            clickTile(tileInd, event.GetType());
+        }
         
         firstClick = false;
     }
@@ -133,14 +142,14 @@ void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
 void Field::checkWinCondition() const
 {
     int hiddenTilesCount = 0;
-    for(int i=0; i < getTilesCount(); ++i)
+    for(int i=0; i < getTileCount(); ++i)
         hiddenTilesCount += !tiles[i].isRevealed() ? 1 : 0;
 
     if (getMemeCount() == hiddenTilesCount)
         *Tile::gameState = GameSt::Win;
 }
 
-int Field::getTilesCount() const
+int Field::getTileCount() const
 {
     return tilesInW * tilesInH;
 }
@@ -167,7 +176,7 @@ void Field::loadImages()
 
 void Field::revealEverything()
 {
-    for (int i = 0; i < getTilesCount(); ++i)
+    for (int i = 0; i < getTileCount(); ++i)
         tiles[i].revealForLoser();
 }
 
@@ -258,7 +267,7 @@ Tile& Field::tileAt(const Vei2& index) const
 
 void Field::hideEverything()
 {
-    for(int i = 0; i < getTilesCount(); ++i)
+    for(int i = 0; i < getTileCount(); ++i)
     {
         tiles[i].hide();
         tiles[i].setFlag(false);
@@ -270,23 +279,38 @@ void Field::reset(bool resetFlags, bool randomize)
     if(Tile::gameState)
         *Tile::gameState = GameSt::Running;
 
+    firstClick = true;
+
     if(!randomize)
     {
-        for (int i = 0; i < getTilesCount(); ++i)
+        for (int i = 0; i < getTileCount(); ++i)
             tiles[i].softReset();
 
         return;
     }
 
-    firstClick = true;
-
-    for (int i = 0; i < getTilesCount(); ++i)
-    {
+    for (int i = 0; i < getTileCount(); ++i)
         tiles[i].reset(resetFlags);
-        tiles[i].index = { i %tilesInW, i /tilesInW };
-    }
 
     putMemes();
+    putNumbers();
+}
+
+void Field::loadFromFile(const std::wstring& path)
+{
+    // do the normal things that reset does
+    if(Tile::gameState)
+        *Tile::gameState = GameSt::Running;
+    
+    firstClick = true;
+    for(int i=0; i < getTileCount(); ++i)
+        tiles[i].reset();
+
+    Image img(path);
+    Vei2 dim = {img.getWidth(), img.getHeight()};
+    for(int i=0; i < dim.x * dim.y; ++i)
+        if(img.getPixel(i %dim.x, i /dim.x).dword == 0x000000)
+            tiles[i].setObj(ObjT::Meme);
     putNumbers();
 }
 
@@ -307,13 +331,13 @@ int Field::getRand() const
 
 int Field::getMemeCount() const
 {
-    return int(getTilesCount() *memesFillness);
+    return int(getTileCount() *memesFillness);
 }
 
 int Field::getRemainingMemeCount() const
 {
     int flaggedCount = 0;
-    for (int i = 0; i < getTilesCount(); ++i)
+    for (int i = 0; i < getTileCount(); ++i)
     {
         bool isFlagged = tiles[i].getDrawSt() == DrawSt::Flag
                       || tiles[i].getDrawSt() == DrawSt::CorrectFlag;
@@ -328,12 +352,16 @@ bool Field::willBeFirstClick() const
     return firstClick;
 }
 
-void Field::iterateGenType()
+void Field::nextGenType()
 {
-    generationType = (GenType)(generationType +1);
-    
-    if(generationType > GenType::LAST)
-        generationType = GenType::FIRST;
+    if(generationType +1 <= GenType::LAST)
+        generationType = (GenType)(generationType +1);
+}
+
+void Field::prevGenType()
+{
+    if(generationType -1 >= GenType::FIRST)
+        generationType = (GenType)(generationType -1);
 }
 
 GenType Field::getGenType() const

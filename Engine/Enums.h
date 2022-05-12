@@ -18,7 +18,8 @@ enum GenType
     unsolvableForAI,
     unsolvable100,
     without100Unsolved,
-    LAST = without100Unsolved
+    loadFromFile,
+    LAST = loadFromFile
 };
 
 enum class ObjT // object type (the actual thing that resides in the tile)

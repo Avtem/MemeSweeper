@@ -70,6 +70,7 @@ private:
 	Image txt100solvable;
 	Image txtWithout100Uns;
 	Image txtRandom;
+	Image txtFromFile;
 	Image txtMemesLeft;
 	Image txtAIdidntSolve;
 	Image radBtnHollow;

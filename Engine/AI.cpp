@@ -33,7 +33,7 @@ void AI::randClick() const
 
 void AI::flagObvious()
 {
-    for(int i=0; i < field.getTilesCount(); ++i)
+    for(int i=0; i < field.getTileCount(); ++i)
     {
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
@@ -49,7 +49,7 @@ void AI::flagObvious()
 
 void AI::afterFlag()
 {
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         Vei2 ind = { i %field.tilesInW, i /field.tilesInW };
         Tile& t = field.tiles[i];
@@ -84,7 +84,7 @@ void AI::traitor()
 {
     afterFlag();
 
-    for(int i=0; i < field.getTilesCount(); ++i)
+    for(int i=0; i < field.getTileCount(); ++i)
     {
         Tile& t = field.tiles[i];   // our main tile (that we "click")
         if(!t.isRevealed() || areaIsSolved(t.index))
@@ -120,7 +120,7 @@ void AI::traitor()
 
 void AI::cantBeHere()
 {
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         Tile& t = field.tiles[i];   // our main tile (that we "click")
         if (!t.isRevealed() || areaIsSolved(t.index))
@@ -158,7 +158,7 @@ void AI::cantBeHere()
 
 void AI::iKnowWhereTheOthers()
 {
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         Tile& t = field.tiles[i]; // our main tile (that we "click")
 
@@ -197,7 +197,7 @@ void AI::countMatters()
     // we have 0 memes, yaY!
     if(memesLeft == 0)
     {
-        for(int i = 0; i < field.getTilesCount(); ++i)
+        for(int i = 0; i < field.getTileCount(); ++i)
             if(field.tiles[i].isHidden())
                 field.clickTile(field.tiles[i].index, lmbUp);
         return;
@@ -229,7 +229,7 @@ void AI::countMatters()
 
 void AI::solveNeighbour()
 {
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         Tile& t = field.tiles[i]; // our main tile (that we "click")
 
@@ -375,7 +375,7 @@ bool AI::theSquareLast() const
 
 bool AI::thereIsSingle() const
 {
-    for(int i = 0; i < field.getTilesCount(); ++i)
+    for(int i = 0; i < field.getTileCount(); ++i)
     {
         const Tile& t = field.tiles[i];
         if(t.isRevealed() && isSingle(t))
@@ -388,7 +388,7 @@ bool AI::thereIsSingle() const
 const Tile* AI::findUnsolvedArea(const std::vector<Tile*>& tilesToExclude) const
 {
     // find unsolved area
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         const Tile& t = field.tiles[i];
         if (t.isRevealed() && !areaIsSolved(t.index) && !areaContainsTile(t, tilesToExclude))
@@ -408,7 +408,7 @@ const Tile* AI::findUnsolvedAreaWithMaxMemes(const std::vector<Tile*>& tilesToEx
     std::vector<std::pair<int,int>> unsolvedInd;
     
     // find unsolved areas
-    for (int i = 0; i < field.getTilesCount(); ++i)
+    for (int i = 0; i < field.getTileCount(); ++i)
     {
         const Tile& t = field.tiles[i];
         if(t.isRevealed() 
@@ -870,7 +870,7 @@ std::vector<Tile*> AI::getUnrevealedTiles(const Vei2& centerTile, bool includeFl
 std::vector<Tile*> AI::getAllHiddenTiles(bool includeFlagged) const
 {
     std::vector <Tile*> vec;
-    for(int i=0; i < field.getTilesCount(); ++i)
+    for(int i=0; i < field.getTileCount(); ++i)
         if(!field.tiles[i].isRevealed()
         && (!includeFlagged ? !field.tiles[i].isFlagged() : true ) )
             vec.push_back(&field.tiles[i]);

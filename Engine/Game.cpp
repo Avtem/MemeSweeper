@@ -44,6 +44,7 @@ Game::Game( MainWindow& wnd )
 	txtRandom(L"img/text/normal.bmp"),
 	txtMemesLeft(L"img/text/memesLeft.bmp"),
 	txtWithout100Uns(L"img/text/without100Uns.bmp"),
+	txtFromFile(L"img/text/fromFile.bmp"),
 	radBtnHollow(L"img/btns/empty.bmp"),
 	radBtnSelected(L"img/btns/selected.bmp"),
 	radBtnSelectedGray(L"img/btns/selectedGray.bmp")
@@ -84,10 +85,15 @@ void Game::UpdateModel()
 
 		switch (e.GetCode())
 		{
+			case VK_F3:
+				if(!field.willBeFirstClick())
+					break;
+				field.prevGenType();
+				break;
 			case VK_F4:
 				if(!field.willBeFirstClick())
 					break;
-				field.iterateGenType();
+				field.nextGenType();
 				break;
 			case 'R':			
 				restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); 
@@ -178,6 +184,7 @@ void Game::drawTexts()
 	gfx.drawImage(drawPos.x, drawPos.y + 30*3, txtAIdidntSolve, Colors::Magenta);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*4, txt100unsolvable, Colors::Magenta);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*5, txtWithout100Uns, Colors::Black);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*6, txtFromFile, Colors::Black);
 }
 
 void Game::drawBtns()
@@ -190,6 +197,7 @@ void Game::drawBtns()
 	gfx.drawImage(drawPos.x, drawPos.y + 30*3, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*4, radBtnHollow);
 	gfx.drawImage(drawPos.x, drawPos.y + 30*5, radBtnHollow);
+	gfx.drawImage(drawPos.x, drawPos.y + 30*6, radBtnHollow);
 
 	Image& selBtn = field.willBeFirstClick() ? radBtnSelected
 											 : radBtnSelectedGray;

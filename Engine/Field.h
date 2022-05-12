@@ -19,13 +19,15 @@ public:
     void clickTile(Vei2 index, Mouse::Event::Type eventType);
     void checkWinCondition() const;
     void reset(bool resetFlags = true, bool randomize = true);
+    void loadFromFile(const std::wstring& path);
     void setDrawingOffset(Vei2 offset);
     Vei2 getSizeInPx() const;
     int getRand() const;
     int getMemeCount() const;
     int getRemainingMemeCount() const;
     bool willBeFirstClick() const;
-    void iterateGenType();
+    void nextGenType();
+    void prevGenType();
     GenType getGenType() const;
     
 private:
@@ -54,7 +56,7 @@ private:
     static std::uniform_int_distribution<int> intDistr;
 
     // m.f.
-    int getTilesCount() const;
+    int getTileCount() const;
     void loadImages();
     void revealEverything();
     void revealAdjTiles(const Vei2& pos); // reveals 8 (if they'ren't boms) adj.tiles for tiles with 0
