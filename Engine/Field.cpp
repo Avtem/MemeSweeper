@@ -99,7 +99,7 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
             ai->regenerateWithout100Unsolv(tileAt(tileInd));
         else if(generationType == GenType::loadFromFile)
         {
-            loadFromFile(L"img/field.bmp");
+            loadFromFile(L"img/maps/lastSquare1.bmp");
             clickTile(tileInd, event.GetType());
         }
         
@@ -331,6 +331,16 @@ int Field::getRand() const
 
 int Field::getMemeCount() const
 {
+    if(generationType == GenType::loadFromFile)
+    {
+        int count = 0;
+        for(int i=0; i < getTileCount(); ++i)
+            if(tiles[i].getObj() == ObjT::Meme)
+                ++count;
+
+        return count;
+    }
+
     return int(getTileCount() *memesFillness);
 }
 

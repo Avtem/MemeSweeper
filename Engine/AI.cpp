@@ -272,17 +272,17 @@ void AI::useEverything()
         iKnowWhereTheOthers();
         countMatters();
         solveNeighbour();
-        //lastSquare1or3();
+        lastSquare3();
 
-        if(*Tile::gameState == GameSt::Win)
+        if(*Tile::gameState == GameSt::Win
+        || *Tile::gameState == GameSt::GameOver)
             break;
     }
 }
 
-void AI::lastSquare1or3()
+void AI::lastSquare3()
 {
-    const int memesLeft = field.getRemainingMemeCount();
-    if(memesLeft != 1 && memesLeft != 3)
+    if(field.getRemainingMemeCount() != 3)
         return;
 
     auto hidTiles = getAllHiddenTiles(false);
@@ -294,19 +294,13 @@ void AI::lastSquare1or3()
                 outerRing.erase(outerRing.begin() +i);
 
         // find intersection where there's only 1 tile
-        for(int i=1; i < outerRing.size(); ++i)
+        for(uint i=1; i < outerRing.size(); ++i)
         {
             auto overlap = getHidOverlapTiles(outerRing.at(0)->index,
                                     outerRing.at(i)->index);
             if(overlap.size() == 1)
             {
-                if(memesLeft == 1)
-                {
-                    excludeTiles(hidTiles, overlap);
-                    field.clickTile(hidTiles.at(0)->index, lmbUp);
-                }
-                else
-                    field.clickTile(overlap.at(0)->index, lmbUp);
+                field.clickTile(overlap.at(0)->index, lmbUp);
                 return;
             }
         }
@@ -814,7 +808,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '6':   countMatters();               break;
         case '7':   cantBeHere();                 break;
         case '8':   solveNeighbour();             break;
-        case '9':   lastSquare1or3();                break;
+        case '9':   lastSquare3();                break;
         case 'Q':   useEverything();              break;
         case 'Z':   isGameUnsolvable100percent(); break;
         case 'E':   randClick(); useEverything(); break; // 1-key press solving
