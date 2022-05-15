@@ -10,22 +10,23 @@ void Tile::parseMouse(Mouse::Event::Type mouseEv)
     if(revealed)
         return;
 
-    if(mouseEv == lmbUp && drawState != DrawSt::Flag)
+    if(mouseEv == lmbUp && drawState != DrawSt::Flagged)
         reveal();
     else if (mouseEv == rmbUp)  // toggle flag
-        drawState = drawState == DrawSt::Normal ? DrawSt::Flag : DrawSt::Normal;
+        drawState = drawState == DrawSt::Normal ? DrawSt::Flagged
+                                                : DrawSt::Normal;
 }
 
-void Tile::revealForLoser()
-{
+void Tile::unfold()
+{    
     if(revealed)
         return;
-    
-    if(drawState == DrawSt::Flag)
-        drawState = obj == ObjT::Meme ? DrawSt::CorrectFlag
-                                      : DrawSt::WrongFlag;
+
+    if(drawState == DrawSt::Flagged)
+        drawState = obj == ObjT::Meme ? DrawSt::FlaggedGood
+                                      : DrawSt::FlaggedBad;
     else if(obj == ObjT::Meme)
-        drawState = DrawSt::HiddenMeme;
+        drawState = DrawSt::Sneaky;
 }
 
 void Tile::reset(bool resetFlag)
@@ -79,32 +80,27 @@ bool Tile::isRevealed() const
 
 bool Tile::isFlagged() const
 {
-    return drawState == DrawSt::Flag;
+    return drawState == DrawSt::Flagged;
 }
 
-// a tile that was not revealed and is not flagged
-bool Tile::isHidden() const
+bool Tile::isBlack() const
 {
     return revealed == false && isFlagged() == false;
 }
 
 void Tile::setFlag(bool flagged)
 {
-    drawState = flagged ? DrawSt::Flag : DrawSt::Normal;
+    drawState = flagged ? DrawSt::Flagged : DrawSt::Normal;
 }
 
 
 void Tile::reveal()
 {
-    switch (obj)
+    revealed = true;
+    
+    if(obj == ObjT::Meme)
     {
-        case ObjT::Number:
-            revealed = true;
-            break;
-        case ObjT::Meme:
-            revealed = true;
-            drawState = DrawSt::FatalMeme;
-            *gameState = GameSt::GameOver;
-            break;
+        drawState = DrawSt::FatalMeme;
+        *gameState = GameSt::GameOver;
     }
 }

@@ -77,48 +77,8 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	while (!wnd.kbd.KeyIsEmpty())
-	{
-		const Keyboard::Event e = wnd.kbd.ReadKey();
-		if(e.IsPress()) // ignore pressings
-			continue;
-
-		switch (e.GetCode())
-		{
-			case VK_F3:
-				if(!field.willBeFirstClick())
-					break;
-				field.prevGenType();
-				break;
-			case VK_F4:
-				if(!field.willBeFirstClick())
-					break;
-				field.nextGenType();
-				break;
-			case 'R':			
-				restartGame(GetAsyncKeyState(VK_CONTROL) >= 0); 
-				break;
-			case VK_ESCAPE:		
-				PostQuitMessage(0);		
-				break;
-		}
-
-		ai.parseKB(e);
-	}
-	
-	while(!wnd.mouse.IsEmpty())
-	{
-        Mouse::Event ev = wnd.mouse.Read();
-		if( !wnd.mouse.IsInWindow() 
-		|| (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
-			continue;
-		
-		if(gameState == GameSt::Running)
-		{
-            Vei2 offset = calcOffsetForField();
-            field.parseMouse(ev, offset);
-		}
-	}
+	parseKeyboard();
+	parseMouse();
 
 	if(playedSnd)
 		return;
@@ -126,20 +86,15 @@ void Game::UpdateModel()
 	switch (gameState)
 	{
 		case GameSt::GameOver:
-        {
-			playedSnd = true;
-			sndLose.Play(1.f, 0.3f);
-            //wnd.ShowMessageBox(L"You suck, man.",
-            //                   L"\nHit 'R' and become better at this game.");
-        }
-			break;
 		case GameSt::Win:
-        {
 			playedSnd = true;
-			sndWin.Play(1.f, 0.3f);
-            //wnd.ShowMessageBox(L"You won!",
-            //                   L"Nice job, man.\nHit 'R' to restart.");
-        }
+			field.unfoldTheField();
+			
+			if(gameState == GameSt::GameOver)
+				sndLose.Play(1.f, 0.3f);
+			if(gameState == GameSt::Win)
+				sndWin.Play(1.f, 0.3f);
+			
 			break;
 	}
 }
@@ -244,6 +199,44 @@ void Game::drawLoosing()
 	offset += {10, 10};	// just a bit to the right to make it look better
 
 	gfx.drawImage(offset.x, offset.y, imgLose, 0x000001);
+}
+
+void Game::parseKeyboard()
+{
+	while(!wnd.kbd.KeyIsEmpty())
+	{
+		const Keyboard::Event e = wnd.kbd.ReadKey();
+		if(e.IsPress()) // ignore pressings
+			continue;
+
+		switch(e.GetCode())
+		{
+			case VK_UP:		field.prevGenType();	break;
+			case VK_DOWN:	field.nextGenType();	break;
+			case 'R': restartGame(GetAsyncKeyState(VK_CONTROL) >= 0);
+				break;
+			case VK_ESCAPE:	PostQuitMessage(0);		break;
+		}
+
+		ai.parseKB(e);
+	}
+}
+
+void Game::parseMouse()
+{
+	while(!wnd.mouse.IsEmpty())
+	{
+		Mouse::Event ev = wnd.mouse.Read();
+		if(!wnd.mouse.IsInWindow()
+		   || (ev.GetType() != lmbUp && ev.GetType() != rmbUp))
+			continue;
+
+		if(gameState == GameSt::Running)
+		{
+			Vei2 offset = calcOffsetForField();
+			field.parseMouse(ev, offset);
+		}
+	}
 }
 
 void Game::ComposeFrame()

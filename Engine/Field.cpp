@@ -58,12 +58,13 @@ void Field::draw() const
             
             switch (tile.getDrawSt())
             {
-                case DrawSt::Normal:       gfx.drawImage(tilePos, *imgHiddenTile); break;
-                case DrawSt::CorrectFlag:  gfx.drawImage(tilePos, *imgCorrectMeme);break;
-                case DrawSt::HiddenMeme:   gfx.drawImage(tilePos, *imgMine);       break;
-                case DrawSt::Flag:         gfx.drawImage(tilePos, *imgFlagged);    break;
-                case DrawSt::WrongFlag:    gfx.drawImage(tilePos, *imgWrongFlag);  break;
-                case DrawSt::FatalMeme:    gfx.drawImage(tilePos, *imgBoom);       break;
+                case DrawSt::Normal:      gfx.drawImage(tilePos, *imgHiddenTile); break;
+                case DrawSt::Flagged:     gfx.drawImage(tilePos, *imgFlagged);    break;
+                // after win | lose
+                case DrawSt::Sneaky:      gfx.drawImage(tilePos, *imgMine);       break;
+                case DrawSt::FlaggedGood: gfx.drawImage(tilePos, *imgCorrectMeme);break;
+                case DrawSt::FlaggedBad:  gfx.drawImage(tilePos, *imgWrongFlag);  break;
+                case DrawSt::FatalMeme:   gfx.drawImage(tilePos, *imgBoom);       break;
             }
 
             if(tile.isRevealed() && tile.getObj() == ObjT::Number)
@@ -99,7 +100,7 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
             ai->regenerateWithout100Unsolv(tileAt(tileInd));
         else if(generationType == GenType::loadFromFile)
         {
-            loadFromFile(L"img/maps/lastSquare1.bmp");
+            loadFromFile(L"img/maps/lastSquare3.bmp");
             clickTile(tileInd, event.GetType());
         }
         
@@ -126,27 +127,26 @@ void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
         return;
 
     tileAt(index).parseMouse(eventType);
-    if (*Tile::gameState == GameSt::GameOver)
-    {
-        revealEverything();
+    if(*Tile::gameState == GameSt::GameOver)
         return;
-    }
-    else if (eventType == lmbUp &&  0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
+    
+    if (eventType == lmbUp && *Tile::gameState == GameSt::Running
+         &&  0 == tiles[index.x +index.y *tilesInW].numOfAdjMemes)
     {
         revealAdjTiles(index);
     }
 
-    checkWinCondition();
+    if(checkWinCondition())
+        *Tile::gameState = GameSt::Win;
 }
 
-void Field::checkWinCondition() const
+bool Field::checkWinCondition() const
 {
     int hiddenTilesCount = 0;
     for(int i=0; i < getTileCount(); ++i)
         hiddenTilesCount += !tiles[i].isRevealed() ? 1 : 0;
 
-    if (getMemeCount() == hiddenTilesCount)
-        *Tile::gameState = GameSt::Win;
+    return getMemeCount() == hiddenTilesCount;
 }
 
 int Field::getTileCount() const
@@ -174,10 +174,10 @@ void Field::loadImages()
     imgNumbers.emplace_back(new Image(L"img/8.bmp"));
 }
 
-void Field::revealEverything()
+void Field::unfoldTheField()
 {
     for (int i = 0; i < getTileCount(); ++i)
-        tiles[i].revealForLoser();
+        tiles[i].unfold();
 }
 
 void Field::revealAdjTiles(const Vei2& pos)
@@ -200,7 +200,7 @@ void Field::revealAdjTiles(const Vei2& pos)
             continue;
 
         Tile& tile = tileAt(ind);
-        if (tile.getObj() == ObjT::Number && tile.isHidden())
+        if (tile.getObj() == ObjT::Number && tile.isBlack())
         {
             tile.reveal();
             revealAdjTiles(ind);    // recurse!
@@ -349,8 +349,8 @@ int Field::getRemainingMemeCount() const
     int flaggedCount = 0;
     for (int i = 0; i < getTileCount(); ++i)
     {
-        bool isFlagged = tiles[i].getDrawSt() == DrawSt::Flag
-                      || tiles[i].getDrawSt() == DrawSt::CorrectFlag;
+        bool isFlagged = tiles[i].getDrawSt() == DrawSt::Flagged
+                      || tiles[i].getDrawSt() == DrawSt::FlaggedGood;
         flaggedCount += isFlagged ? 1 : 0;
     }
 
@@ -364,13 +364,13 @@ bool Field::willBeFirstClick() const
 
 void Field::nextGenType()
 {
-    if(generationType +1 <= GenType::LAST)
+    if(willBeFirstClick() && generationType +1 <= GenType::LAST)
         generationType = (GenType)(generationType +1);
 }
 
 void Field::prevGenType()
 {
-    if(generationType -1 >= GenType::FIRST)
+    if(willBeFirstClick() && generationType -1 >= GenType::FIRST)
         generationType = (GenType)(generationType -1);
 }
 

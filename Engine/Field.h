@@ -17,7 +17,7 @@ public:
     void parseMouse(Mouse::Event event, Vei2& offset); // returns true if click was fatal
     void parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType);
     void clickTile(Vei2 index, Mouse::Event::Type eventType);
-    void checkWinCondition() const;
+    bool checkWinCondition() const;
     void reset(bool resetFlags = true, bool randomize = true);
     void loadFromFile(const std::wstring& path);
     void setDrawingOffset(Vei2 offset);
@@ -29,7 +29,8 @@ public:
     void nextGenType();
     void prevGenType();
     GenType getGenType() const;
-    
+    void unfoldTheField();
+
 private:
     friend AI;
 
@@ -58,7 +59,6 @@ private:
     // m.f.
     int getTileCount() const;
     void loadImages();
-    void revealEverything();
     void revealAdjTiles(const Vei2& pos); // reveals 8 (if they'ren't boms) adj.tiles for tiles with 0
     void putMemes();
     bool tileIsValid(const Vei2& index) const;

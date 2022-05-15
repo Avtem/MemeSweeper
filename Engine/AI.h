@@ -14,18 +14,18 @@ public:
     AI(class Game& game, class Field& inField);
     void parseKB(const Keyboard::Event& event);
 
-    // returns true if flagged count == number
     bool areaIsSolved(const Vei2& centerTile) const;
 
-    bool processing = false;    // to improve perfomance
+    bool processing = false;    // to disable drawing while AI is thinking
 private:
     class Field& field;
     class Game& game;
 
+    std::vector<Tile*> getAllUnsolvedNumbers() const;
+    std::vector<Tile*> getAllBlackTiles() const;
     void getAdjTiles(Tile** outputArr, const Vei2& centerTile, 
                      int outerRingCount = 1) const;
-    std::vector<Tile*> getUnrevealedTiles(const Vei2& centerTile, bool includeFlagged) const;
-    std::vector<Tile*> getAllHiddenTiles(bool includeFlagged) const;
+    std::vector<Tile*> getHiddenTiles(const Vei2& centerTile, bool includeFlagged) const;
     std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;
     std::vector<Tile*> getNonOverlapTiles(const Tile* t, const Tile* adjT) const; // returns non-overlapped tiles
     std::vector<Tile*> getSquareOuterRing(const Tile* t, int ringCount = 1) const;
@@ -55,6 +55,9 @@ private:
     void solveNeighbour();
     void useEverything();
     void lastSquare3();
+    void iKnowWhereIsOne();
+
+// HELPERS (shortcuts)
     Tile& tileAt(const Vei2& indexPos) const;
     // tells if pos2 is to the right of pos1
     bool toTheRight(const Vei2& pos1, const Vei2& pos2) const; 
@@ -62,14 +65,15 @@ private:
     bool isAbove(const Vei2& pos1, const Vei2& pos2) const; 
     bool isBelow(const Vei2& pos1, const Vei2& pos2) const; 
 
-    // detecting unsolvable
+    // detecting unsolvable fields
+    // global stuff
     bool insideBushes() const;
     bool theSquare() const;
     bool theSquareLast() const; // 2x2 square only when there're 2 memes left
     bool thereIsSingle() const;
-    // global stuff
-    bool isGameSolved() const;
     bool isSingle(const Tile& t) const; // BEFORE CALLING IT, MAKE SURE you are not in WIN state
+
+    bool isGameSolved() const;
     bool isGameUnsolvable100percent() const;
     // creates a game, uses all algorithms, and if solved, repeats until it's unsolved
     void regenerateUntilSolvable100(const Tile& tile);

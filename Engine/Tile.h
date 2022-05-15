@@ -6,11 +6,11 @@
 class Tile
 {
 public:
-    int numOfAdjMemes = -1; // if no number!
-    Vei2 index;
+    int numOfAdjMemes = -1; // meme by default.
+    Vei2 index; // its index within the whole Field
 //////////// member functions
-    void parseMouse(Mouse::Event::Type mouseEv); // returns TRUE if you hit a meme
-    void revealForLoser();
+    void parseMouse(Mouse::Event::Type mouseEv);
+    void unfold();
     void reset(bool resetFlag = true);
     void softReset();
     void setObj(ObjT type);
@@ -18,19 +18,19 @@ public:
     void reveal();
     bool isRevealed() const;
     bool isFlagged() const;
-    bool isHidden() const; // a tile that was not revealed and is not flagged
+    bool isBlack() const;
     void setFlag(bool flagged);
     DrawSt Tile::getDrawSt() const;
     ObjT Tile::getObj() const;
     void hide();
     
-    static GameSt* gameState; // Tile class now controls game state!
+    static GameSt* gameState; // Tile class now can control game state!
 
 private:
     ObjT obj = ObjT::Number;
     DrawSt drawState = DrawSt::Normal;
     bool revealed = false;
 
-    static constexpr int dimension = 32;    // 32 pixels
+    static constexpr int dimension = 32;    // dim. of 1 tile = 32 pixels
 };
 

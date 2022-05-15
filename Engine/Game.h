@@ -49,6 +49,8 @@ private:
 	void drawNums();
 	void drawWinning();
 	void drawLoosing();
+	void parseKeyboard();
+	void parseMouse();
 	/********************************/
 private:
 	MainWindow& wnd;
