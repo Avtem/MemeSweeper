@@ -473,9 +473,10 @@ void AI::regenerateUntilSolvable100(const Tile& tile)
     field.clickTile(tile.index, lmbUp);
 }
 
-// IF CURRENT FIELD SATISFIES THE CLICK, IT WON'T DO ANYTHING
 void AI::regenerateUntilClickedTileIsSave(const Tile& tile)
 {
+    field.reset(true, false); // BECAUSE WE WANNA FORGET PREVIOUS GAME
+     
     int spawnAttempts = 0;
     switch(field.firstClickResult)
     {
