@@ -272,7 +272,7 @@ void AI::useEverything()
         iKnowWhereTheOthers();
         countMatters();
         solveNeighbour();
-        iKnowWhereIsOne();
+        oneThreeOne();
         lastSquare3();
 
         if(*Tile::gameState == GameSt::Win)
@@ -307,13 +307,33 @@ void AI::lastSquare3()
     }
 }
 
-void AI::iKnowWhereIsOne()
+void AI::oneThreeOne()
 {
     // do for every unsolved number    
     std::vector <Tile*> unsolved = getAllUnsolvedNumbers();
     for(const Tile* t : unsolved)
     {
-        
+        if(requiredCountToSolve(*t) < 2)
+            continue;
+        auto hidT = getHiddenTiles(t->index, false);
+        int reqCount = requiredCountToSolve(*t);
+
+        static Tile* adjNums[30];
+        getAdjUnsolvedNumbers(adjNums, t, 2);
+        for(Tile** it = adjNums; *it; ++it)
+        {
+            auto ov = getHidOverlapTiles(t->index, (*it)->index);
+            if(ov.size() > 1)
+            {
+                --reqCount;
+                excludeTiles(hidT, ov);
+                if(hidT.size() == 1 && reqCount == 1)
+                {
+                    hidT.at(0)->setFlag(true);  // yay, flag the one!
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -630,6 +650,26 @@ std::vector<Tile*> AI::getSquareOuterRing(const Tile* t, int ringCount) const
     return tiles;
 }
 
+void AI::getAdjUnsolvedNumbers(Tile** outputArr, const Tile* t, 
+                               int ringCount) const
+{
+    static Tile* adjTiles[30];
+    getAdjTiles(adjTiles, t->index, 2);
+
+    for(int i=0; adjTiles[i]; ++i)
+    {
+        if(adjTiles[i]->isRevealed()
+        //&& adjTiles[i]->getObj() == ObjT::Number    // avDint?
+        && requiredCountToSolve(*adjTiles[i]) == 1)
+        {
+            *outputArr = adjTiles[i];
+            ++outputArr;
+        }
+    }
+
+    *outputArr = nullptr; // set end of the array
+}
+
 void AI::excludeTiles(std::vector<Tile*>& mainVec,
                                     const std::vector<Tile*>& tilesToExclude) const
 {
@@ -813,7 +853,7 @@ void AI::parseKB(const Keyboard::Event& event)
         case '7':   cantBeHere();                     break;
         case '8':   solveNeighbour();                 break;
         case '9':   lastSquare3();                    break;
-        case '0':   iKnowWhereIsOne();                break;
+        case '0':   oneThreeOne();                break;
         case 'Q':   useEverything();                  break;
         case 'Z':   isGameUnsolvable100percent();     break;
         case 'E':   randClick(); useEverything();     break; // 1-key press solving

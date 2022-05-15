@@ -173,7 +173,7 @@ void Game::drawNums()
 	drawPosDig2.x += 108;
 	
 	int mcount = field.getRemainingMemeCount();
-	uint digIndex = abs(mcount);
+	size_t digIndex = abs(mcount);
 	
 	if(mcount < 0)
 		gfx.drawImage(mcount /10 ? minusPos : drawPosDig1, imgMinus);
@@ -216,11 +216,11 @@ void Game::parseKeyboard()
 
 		switch(e.GetCode())
 		{
-			case VK_UP:		field.prevGenType();	break;
-			case VK_DOWN:	field.nextGenType();	break;
-			case 'R': restartGame(GetAsyncKeyState(VK_CONTROL) >= 0);
-				break;
-			case VK_ESCAPE:	PostQuitMessage(0);		break;
+			case VK_UP:		field.prevGenType();	    break;
+			case VK_DOWN:	field.nextGenType();	    break;
+			case 'R':       restartGame();				break;
+			case 'T':       restartGame(false);			break;
+			case VK_ESCAPE:	PostQuitMessage(0);		    break;
 		}
 
 		ai.parseKB(e);

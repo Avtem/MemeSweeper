@@ -100,7 +100,7 @@ void Field::parseMouse(Mouse::Event event, Vei2& offset)
             ai->regenerateWithout100Unsolv(tileAt(tileInd));
         else if(generationType == GenType::loadFromFile)
         {
-            loadFromFile(L"img/maps/lastSquare3.bmp");
+            loadFromFile(L"img/maps/1 3 1.bmp");
             clickTile(tileInd, event.GetType());
         }
         
