@@ -34,6 +34,7 @@ Game::Game( MainWindow& wnd )
 	ai(*this, field),	// !depends on field
 	sndWin(L"snd\\win.wav"),
 	sndLose(L"snd\\lose.wav"),
+	imgMinus(L"img/nums/-.bmp"),
 	imgHotkeys(L"img/hotkeys.bmp"),
 	imgWin(L"img/win.bmp"),
 	imgLose(L"img/lose.bmp"),
@@ -162,19 +163,23 @@ void Game::drawBtns()
 void Game::drawNums()
 {
 	Vei2 fieldSize = field.getSizeInPx();
-	Vei2 drawPosDig1 = {fieldSize.x + 40, fieldSize.y +6};
-	Vei2 drawPosDig2 = {fieldSize.x + 50, fieldSize.y +6};
-
-	int mcount = field.getRemainingMemeCount();
+	Vei2 minusPos    = {fieldSize.x + 40, fieldSize.y +6};
+	Vei2 drawPosDig1 = {fieldSize.x + 50, fieldSize.y +6};
+	Vei2 drawPosDig2 = {fieldSize.x + 60, fieldSize.y +6};
 
 	gfx.drawImage(drawPosDig1, txtMemesLeft);
+	minusPos.x	  += 110;
+	drawPosDig1.x += 108;
+	drawPosDig2.x += 108;
 	
-	drawPosDig1.x += 105;
-	drawPosDig2.x += 105;
-
+	int mcount = field.getRemainingMemeCount();
+	uint digIndex = abs(mcount);
+	
+	if(mcount < 0)
+		gfx.drawImage(mcount /10 ? minusPos : drawPosDig1, imgMinus);
 	if(mcount /10)
-		gfx.drawImage(drawPosDig1, *imgNums.at(mcount /10));
-	gfx.drawImage(drawPosDig2, *imgNums.at(mcount %10));
+		gfx.drawImage(drawPosDig1, *imgNums.at(digIndex /10));
+	gfx.drawImage(drawPosDig2, *imgNums.at(digIndex %10));
 }
 
 void Game::drawWinning()

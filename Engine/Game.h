@@ -64,6 +64,7 @@ private:
 	Sound sndLose;
 	Sound sndWin;
 	std::vector<Image*>imgNums;
+	Image imgMinus;
 	Image imgWin;
 	Image imgLose;
 	Image imgHotkeys;
