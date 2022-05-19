@@ -102,7 +102,7 @@ void AI::traitor()
                 continue;
 
             // if t overlaps adj.cell, reveal all unrevealed tiles for t
-            auto overlap = getHidOverlapTiles(t.index, adj->index);
+            auto overlap = getBlackOverlapTiles(t.index, adj->index);
             auto adjHidTiles = getHiddenTiles(adj->index, false);
             excludeTiles(adjHidTiles, overlap);
             
@@ -115,6 +115,45 @@ void AI::traitor()
                     field.clickTile(tNonOv->index, Mouse::Event::Type::LRelease);
             }
         }
+    }
+}
+
+void AI::traitorMega()
+{
+    afterFlag();
+
+    std::vector <Tile*> unsolved = getAllUnsolvedNumbers();
+    for(const Tile* t : unsolved)   // tile of interest
+    {
+        int reqCount = requiredCountToSolve(*t);
+        if(reqCount < 2)
+            continue;
+
+        const std::vector<Tile*> blackTconst = getHiddenTiles(t->index, false);
+        std::vector<Tile*> potTraitors = getAdjNumsThatOverlap2AndMore(t);
+        for(auto* tr : potTraitors) // check if the tile is traitor
+        {
+            std::vector<Tile*> blackTiles = blackTconst; // reset the hid tiles
+            auto trBlack = getHiddenTiles(tr->index, false);
+            excludeTiles(blackTiles, trBlack);
+            
+            for(auto* tr2 : potTraitors) // so, are you a traitor?
+            {
+                if(tr == tr2)
+                    continue;
+
+                auto blackTr2 = getHiddenTiles(tr2->index, false);
+                excludeTiles(blackTiles, blackTr2);
+                if(blackTiles.size() == 0)
+                {
+                    // we found a traitor!
+                    excludeTiles(blackTr2, blackTconst);
+                    for(auto* nonMeme : blackTr2)
+                        field.clickTile(nonMeme->index, lmbUp);
+                }
+            }
+        }
+            
     }
 }
 
@@ -175,7 +214,7 @@ void AI::iKnowWhereTheOthers()
             if (!adj->isRevealed() || areaIsSolved(adj->index))
                 continue;
 
-            auto overlap = getHidOverlapTiles(t.index, adj->index);
+            auto overlap = getBlackOverlapTiles(t.index, adj->index);
             auto tHid = getHiddenTiles(t.index, false);
             auto adjHid = getHiddenTiles(adj->index, false);
             excludeTiles(adjHid, overlap);
@@ -247,7 +286,7 @@ void AI::solveNeighbour()
                 continue;
 
             auto tHid = getHiddenTiles(t.index, false);
-            auto overlap = getHidOverlapTiles(t.index, adj->index);
+            auto overlap = getBlackOverlapTiles(t.index, adj->index);
             excludeTiles(tHid, overlap);
             
             if(!tHid.size()
@@ -273,6 +312,7 @@ void AI::useEverything()
         countMatters();
         solveNeighbour();
         oneThreeOne();
+        traitorMega();   // includes "afterflag"
         lastSquare3();
 
         if(*Tile::gameState == GameSt::Win)
@@ -296,7 +336,7 @@ void AI::lastSquare3()
         // find intersection where there's only 1 tile
         for(size_t i=1; i < outerRing.size(); ++i)
         {
-            auto overlap = getHidOverlapTiles(outerRing.at(0)->index,
+            auto overlap = getBlackOverlapTiles(outerRing.at(0)->index,
                                     outerRing.at(i)->index);
             if(overlap.size() == 1)
             {
@@ -313,16 +353,17 @@ void AI::oneThreeOne()
     std::vector <Tile*> unsolved = getAllUnsolvedNumbers();
     for(const Tile* t : unsolved)
     {
-        if(requiredCountToSolve(*t) < 2)
-            continue;
-        auto hidT = getHiddenTiles(t->index, false);
         int reqCount = requiredCountToSolve(*t);
+        if(reqCount < 2)
+            continue;
+
+        auto hidT = getHiddenTiles(t->index, false);
 
         static Tile* adjNums[30];
         getAdjUnsolvedNumbers(adjNums, t, 2);
         for(Tile** it = adjNums; *it; ++it)
         {
-            auto ov = getHidOverlapTiles(t->index, (*it)->index);
+            auto ov = getBlackOverlapTiles(t->index, (*it)->index);
             if(ov.size() > 1)
             {
                 --reqCount;
@@ -588,7 +629,7 @@ bool AI::isBelow(const Vei2& pos1, const Vei2& pos2) const
     return pos1.x == pos2.x && pos1.y == pos2.y -1;
 }
 
-std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const
+std::vector<Tile*> AI::getBlackOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const
 {
     std::vector<Tile*> overlap;
 
@@ -608,7 +649,7 @@ std::vector<Tile*> AI::getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenIn
 std::vector<Tile*> AI::getNonOverlapTiles(const Tile* t, const Tile* adjT) const
 {
     std::vector<Tile*> nonOverlap;
-    auto overlap = getHidOverlapTiles(t->index, adjT->index);
+    auto overlap = getBlackOverlapTiles(t->index, adjT->index);
 
     size_t requiredFlagCount = adjT->numOfAdjMemes -getAdjFlagCount(adjT->index);
     if(overlap.size() >= requiredFlagCount)
@@ -649,6 +690,24 @@ std::vector<Tile*> AI::getSquareOuterRing(const Tile* t, int ringCount) const
     }
 
     return tiles;
+}
+
+std::vector<Tile*> AI::getAdjNumsThatOverlap2AndMore(const Tile* t) const
+{
+    std::vector<Tile*> vec;
+    
+    auto hidT = getHiddenTiles(t->index, false);
+    static Tile* adjNums[30];
+    getAdjUnsolvedNumbers(adjNums, t, 2);
+
+    for(Tile** it = adjNums; *it; ++it)
+    {
+        auto ov = getBlackOverlapTiles(t->index, (*it)->index);
+        if(ov.size() > 1)
+            vec.push_back(*it);
+    }
+
+    return vec;
 }
 
 void AI::getAdjUnsolvedNumbers(Tile** outputArr, const Tile* t, 
@@ -854,7 +913,8 @@ void AI::parseKB(const Keyboard::Event& event)
         case '7':   cantBeHere();                     break;
         case '8':   solveNeighbour();                 break;
         case '9':   lastSquare3();                    break;
-        case '0':   oneThreeOne();                break;
+        case '0':   oneThreeOne();                    break;
+        case VK_OEM_MINUS:   traitorMega();           break;
         case 'Q':   useEverything();                  break;
         case 'Z':   isGameUnsolvable100percent();     break;
         case 'E':   randClick(); useEverything();     break; // 1-key press solving

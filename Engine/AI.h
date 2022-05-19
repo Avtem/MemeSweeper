@@ -26,9 +26,10 @@ private:
     void getAdjTiles(Tile** outputArr, const Vei2& centerTile, 
                      int outerRingCount = 1) const;
     std::vector<Tile*> getHiddenTiles(const Vei2& centerTile, bool includeFlagged) const;
-    std::vector<Tile*> getHidOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;
+    std::vector<Tile*> getBlackOverlapTiles(const Vei2& cenInd1, const Vei2& cenInd2) const;
     std::vector<Tile*> getNonOverlapTiles(const Tile* t, const Tile* adjT) const; // returns non-overlapped tiles
     std::vector<Tile*> getSquareOuterRing(const Tile* t, int ringCount = 1) const;
+    std::vector<Tile*> getAdjNumsThatOverlap2AndMore(const Tile* t) const;
     // requires array of size of 30 or more
     void getAdjUnsolvedNumbers(Tile** outputArr, const Tile* t,
                                int ringCount = 2) const; 
@@ -52,6 +53,7 @@ private:
     void flagObvious();
     void afterFlag();
     void traitor();
+    void traitorMega();
     void cantBeHere();
     void iKnowWhereTheOthers();
     void countMatters();

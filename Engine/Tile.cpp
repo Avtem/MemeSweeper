@@ -5,6 +5,16 @@
 
 GameSt *Tile::gameState = nullptr;
 
+bool Tile::operator==(const Tile& other) const
+{
+    return index == other.index;
+}
+
+bool Tile::operator!=(const Tile& other) const
+{
+    return !(*this == other);
+}
+
 void Tile::parseMouse(Mouse::Event::Type mouseEv)
 {
     if(revealed)
@@ -24,7 +34,7 @@ void Tile::unfold()
 
     if(drawState == DrawSt::Flagged)
         drawState = obj == ObjT::Meme ? DrawSt::FlaggedGood
-                                      : DrawSt::FlaggedBad;
+                                      : DrawSt::FlaggedBad; // avBug
     else if(obj == ObjT::Meme)
         drawState = DrawSt::Sneaky;
 }

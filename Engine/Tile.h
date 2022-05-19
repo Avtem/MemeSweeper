@@ -6,6 +6,9 @@
 class Tile
 {
 public:
+    bool operator==(const Tile& other) const;
+    bool operator!=(const Tile& other) const;
+
     int numOfAdjMemes = -1; // meme by default.
     Vei2 index; // its index within the whole Field
 //////////// member functions
