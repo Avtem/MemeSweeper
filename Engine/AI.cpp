@@ -329,7 +329,7 @@ void AI::lastSquare3()
     if(hidTiles.size() == 4 && isAhid2x2Square(hidTiles.at(0)->index))
     {
         auto outerRing = getSquareOuterRing(hidTiles.at(0));
-        for(int i=outerRing.size() -1; i >= 0; --i)
+        for(int i=(int)outerRing.size() -1; i >= 0; --i)
             if(!outerRing.at(i)->isRevealed())
                 outerRing.erase(outerRing.begin() +i);
 

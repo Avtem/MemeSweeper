@@ -61,6 +61,7 @@ private:
 	Field field;
 	AI ai;	// !depends on field
 	bool playedSnd = false;
+	bool hideWinLoseImg = false;
 	Sound sndLose;
 	Sound sndWin;
 	std::vector<Image*>imgNums;

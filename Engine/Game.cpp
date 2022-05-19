@@ -104,6 +104,7 @@ void Game::UpdateModel()
 
 void Game::restartGame(bool randomize)
 {
+	hideWinLoseImg = false;
 	playedSnd = false;
 	field.reset(true, randomize);
 	sndWin.StopAll();
@@ -241,6 +242,8 @@ void Game::parseMouse()
 			Vei2 offset = calcOffsetForField();
 			field.parseMouse(ev, offset);
 		}
+		else
+			hideWinLoseImg = true;
 	}
 }
 
@@ -253,8 +256,11 @@ void Game::ComposeFrame()
 	drawNums();
 	//gfx.drawImage(280, 0, imgHotkeys);	// hotkey list
 
-	if(gameState == GameSt::Win)
-		drawWinning();
-	if(gameState == GameSt::GameOver)
-		drawLoosing();
+	if(hideWinLoseImg == false)
+	{
+		if(gameState == GameSt::Win)
+			drawWinning();
+		if(gameState == GameSt::GameOver)
+			drawLoosing();
+	}
 }
