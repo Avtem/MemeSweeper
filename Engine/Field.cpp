@@ -123,7 +123,7 @@ void Field::parseFirstClick(Vei2 tileInd, Mouse::Event::Type eventType)
 
 void Field::clickTile(Vei2 index, Mouse::Event::Type eventType)
 {
-    if(!tileIsValid(index))
+    if(!tileIsValid(index) || *Tile::gameState == GameSt::GameOver)
         return;
 
     tileAt(index).parseMouse(eventType);
@@ -219,7 +219,7 @@ void Field::putMemes()
             x = getRand() % tilesInW;
             y = getRand() % tilesInH;
         } while (tiles[x +y*tilesInW].getObj() == ObjT::Meme);
-        tiles[x +y*tilesInW].setObj(ObjT::Meme);
+        tiles[x +y*tilesInW].setMeme();
     }
 }
 
@@ -310,7 +310,7 @@ void Field::loadFromFile(const std::wstring& path)
     Vei2 dim = {img.getWidth(), img.getHeight()};
     for(int i=0; i < dim.x * dim.y; ++i)
         if(img.getPixel(i %dim.x, i /dim.x).dword == 0x000000)
-            tiles[i].setObj(ObjT::Meme);
+            tiles[i].setMeme();
     putNumbers();
 }
 

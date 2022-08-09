@@ -120,6 +120,7 @@ void AI::traitor()
 
 void AI::traitorMega()
 {
+    return; // SOLVE THAT BUG!!!!!!!
     afterFlag();
 
     std::vector <Tile*> unsolved = getAllUnsolvedNumbers();
@@ -148,8 +149,11 @@ void AI::traitorMega()
                 {
                     // we found a traitor!
                     excludeTiles(blackTr2, blackTconst);
-                    for(auto* nonMeme : blackTr2)
+                    for(auto* nonMeme : blackTr2) 
+                    {
                         field.clickTile(nonMeme->index, lmbUp);
+                        afterFlag(); // because not doing it can cause problems!
+                    }
                 }
             }
         }

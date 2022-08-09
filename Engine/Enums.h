@@ -54,7 +54,8 @@ enum GenType
 
 enum class ObjT // object type (the actual thing that resides in the tile)
 {
-    Meme,
+    Unitialized = -2,
+    Meme = -1,
     Number // the tile contains number (from 0 to 8) of adj.memes
 };
 

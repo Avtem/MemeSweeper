@@ -16,7 +16,7 @@ public:
     void unfold();
     void reset(bool resetFlag = true);
     void softReset();
-    void setObj(ObjT type);
+    void setMeme();
     void setNumber(int memeCount);
     void reveal();
     bool isRevealed() const;
@@ -30,7 +30,6 @@ public:
     static GameSt* gameState; // Tile class now can control game state!
 
 private:
-    ObjT obj = ObjT::Number;
     DrawSt drawState = DrawSt::Normal;
     bool revealed = false;
 

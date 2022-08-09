@@ -3,7 +3,7 @@
 #define lmbUp Mouse::Event::Type::LRelease
 #define rmbUp Mouse::Event::Type::RRelease
 
-GameSt *Tile::gameState = nullptr;
+GameSt* Tile::gameState = nullptr;
 
 bool Tile::operator==(const Tile& other) const
 {
@@ -23,8 +23,7 @@ void Tile::parseMouse(Mouse::Event::Type mouseEv)
     if(mouseEv == lmbUp && drawState != DrawSt::Flagged)
         reveal();
     else if (mouseEv == rmbUp)  // toggle flag
-        drawState = drawState == DrawSt::Normal ? DrawSt::Flagged
-                                                : DrawSt::Normal;
+        setFlag(!isFlagged());
 }
 
 void Tile::unfold()
@@ -32,18 +31,17 @@ void Tile::unfold()
     if(revealed)
         return;
 
-    if(drawState == DrawSt::Flagged)
-        drawState = obj == ObjT::Meme ? DrawSt::FlaggedGood
-                                      : DrawSt::FlaggedBad; // avBug
-    else if(obj == ObjT::Meme)
+    if(isFlagged())
+        drawState = getObj() == ObjT::Meme ? DrawSt::FlaggedGood
+                                           : DrawSt::FlaggedBad;
+    else if(getObj() == ObjT::Meme)
         drawState = DrawSt::Sneaky;
 }
 
 void Tile::reset(bool resetFlag)
 {
-    numOfAdjMemes = -1;
+    numOfAdjMemes = (int)ObjT::Unitialized;
     revealed = false;
-    obj = ObjT::Number;
 
     if(resetFlag)
         drawState = DrawSt::Normal;
@@ -52,14 +50,21 @@ void Tile::reset(bool resetFlag)
 void Tile::softReset()
 {
     revealed = false;
-    obj = ObjT::Number;
 
     drawState = DrawSt::Normal;
 }
 
 ObjT Tile::getObj() const
 {
-    return obj;
+    if(numOfAdjMemes == -1)
+        return ObjT::Meme;
+    else
+        return ObjT::Number;
+}
+
+void Tile::setMeme()
+{
+    numOfAdjMemes = -1;
 }
 
 void Tile::hide()
@@ -67,14 +72,8 @@ void Tile::hide()
     revealed = false;
 }
 
-void Tile::setObj(ObjT type)
-{
-    obj = type;
-}
-
 void Tile::setNumber(int memeCount)
 {
-    obj = ObjT::Number;
     numOfAdjMemes = memeCount;
 }
 
@@ -108,7 +107,7 @@ void Tile::reveal()
 {
     revealed = true;
     
-    if(obj == ObjT::Meme)
+    if(getObj() == ObjT::Meme)
     {
         drawState = DrawSt::FatalMeme;
         *gameState = GameSt::GameOver;
