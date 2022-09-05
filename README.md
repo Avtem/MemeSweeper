@@ -1,5 +1,5 @@
 # -1
-Source code for Memе Swеeper
+Kod źródłowy do gry Memе Swеeper
 
 PROSZĘ TO PRZECZYTAĆ!!!
 
