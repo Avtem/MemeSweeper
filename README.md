@@ -1,4 +1,4 @@
-Source code for the game "Meme Sweeper"
+Source code for the game "Mеme Swееper"
 
 READ ME!!!<br>
 This is my private project. I was the only person working on it, so it will not build on other machines.
