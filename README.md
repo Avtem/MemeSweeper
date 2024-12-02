@@ -1,5 +1,3 @@
-Source code for the game "Mеme Swееper"
+My own extension of the game Mine sweeper where you can generate games that are 100% solvable, 100% unsolvable, randomized in a usual way, and those that my algoritm couldn't solve on its own.
 
-READ ME!!!<br>
-This is my private project. I was the only person working on it, so it will not build on other machines.
-<br>But you can still inspect most of my code to make sure I am the one who wrote it.
+Built using ChiliFramework
